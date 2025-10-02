@@ -22,18 +22,24 @@ export interface Category {
 }
 
 export const categories: Category[] = [
-  { id: 'borracha', name: 'Borracha', count: 45 },
-  { id: 'plastico', name: 'Plástico', count: 78 },
-  { id: 'metal', name: 'Metal', count: 32 },
-  { id: 'papel', name: 'Papel', count: 23 },
-  { id: 'vidro', name: 'Vidro', count: 15 },
-  { id: 'eletronicos', name: 'Eletrônicos', count: 67 },
+  { id: 'vidro', name: 'Vidro', count: 18 },
+  { id: 'borracha', name: 'Borracha', count: 22 },
+  { id: 'organico', name: 'Orgânico', count: 15 },
+  { id: 'reee', name: 'REEE', count: 12 },
+  { id: 'quimicos', name: 'Químicos', count: 9 },
+  { id: 'papel', name: 'Papel', count: 21 },
+  { id: 'madeira', name: 'Madeira', count: 14 },
+  { id: 'tecido', name: 'Tecido', count: 11 },
+  { id: 'plastico', name: 'Plástico', count: 33 },
+  { id: 'metais', name: 'Metais', count: 26 },
+  { id: 'rcc', name: 'RCC', count: 10 },
+  { id: 'sucata', name: 'Sucata', count: 17 },
 ];
 
 export const products: Product[] = [
   {
     id: '1',
-    title: 'Placas de Borracha Industrial - 10mm',
+    title: 'Placas de Borracha Industrial',
     price: 45.50,
     location: 'São Paulo, SP',
     category: 'borracha',
@@ -109,7 +115,7 @@ export const products: Product[] = [
     title: 'Sucata de Alumínio',
     price: 4.20,
     location: 'Porto Alegre, RS',
-    category: 'metal',
+    category: 'metais',
     description: 'Sucata de alumínio limpa, separada e pronta para fundição.',
     images: [
       'https://images.unsplash.com/photo-1558618047-3c8c76ca7d13?auto=format&fit=crop&w=1200&q=80',

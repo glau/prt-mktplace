@@ -28,6 +28,7 @@ import {
 import type { Product, Category } from '../../../data/products';
 import SimpleImageGallery from '../../../components/SimpleImageGallery';
 import { fetchProductById, fetchCategoryById } from '../../../lib/api';
+import AppLayout from '../../../components/AppLayout';
 
 interface ProductPageClientProps {
   productId: string;
@@ -88,51 +89,59 @@ export default function ProductPageClient({ productId }: ProductPageClientProps)
 
   if (loading) {
     return (
-      <Container maxWidth="lg" sx={{ py: 6 }}>
-        <Box sx={{ display: 'flex', justifyContent: 'center' }}>
-          <CircularProgress />
-        </Box>
-      </Container>
+      <AppLayout>
+        <Container maxWidth="lg" sx={{ py: 6 }}>
+          <Box sx={{ display: 'flex', justifyContent: 'center' }}>
+            <CircularProgress />
+          </Box>
+        </Container>
+      </AppLayout>
     );
   }
 
   if (error || !product || !category) {
     return (
-      <Container maxWidth="lg" sx={{ py: 6 }}>
-        <Paper sx={{ p: 4, textAlign: 'center' }}>
-          <Typography variant="h6" sx={{ mb: 1 }}>
-            {error ?? 'Produto não encontrado'}
-          </Typography>
-          <Typography variant="body2" color="text.secondary">
-            Tente voltar e selecionar outro produto.
-          </Typography>
-        </Paper>
-      </Container>
+      <AppLayout>
+        <Container maxWidth="lg" sx={{ py: 6 }}>
+          <Paper sx={{ p: 4, textAlign: 'center' }}>
+            <Typography variant="h6" sx={{ mb: 1 }}>
+              {error ?? 'Produto não encontrado'}
+            </Typography>
+            <Typography variant="body2" color="text.secondary">
+              Tente voltar e selecionar outro produto.
+            </Typography>
+          </Paper>
+        </Container>
+      </AppLayout>
     );
   }
 
   return (
-    <Container maxWidth="lg" sx={{ py: 3 }}>
-      {/* Breadcrumbs */}
-      <Breadcrumbs sx={{ mb: 3 }}>
-        <Link href="/" color="inherit" underline="hover">
-          Início
-        </Link>
-        <Link href="/categorias" color="inherit" underline="hover">
-          Categorias
-        </Link>
-        <Link href={`/categoria/${category.id}`} color="inherit" underline="hover">
-          {category.name}
-        </Link>
-        <Typography color="text.primary" sx={{ 
-          display: '-webkit-box',
-          WebkitLineClamp: 1,
-          WebkitBoxOrient: 'vertical',
-          overflow: 'hidden',
-        }}>
-          {product.title}
-        </Typography>
-      </Breadcrumbs>
+    <AppLayout>
+      <Container maxWidth="lg" sx={{ py: 3 }}>
+        {/* Breadcrumbs */}
+        <Breadcrumbs sx={{ mb: 3 }}>
+          <Link href="/" color="inherit" underline="hover">
+            Início
+          </Link>
+          <Link href="/categorias" color="inherit" underline="hover">
+            Categorias
+          </Link>
+          <Link href={`/categoria/${category.id}`} color="inherit" underline="hover">
+            {category.name}
+          </Link>
+          <Typography
+            color="text.primary"
+            sx={{
+              display: '-webkit-box',
+              WebkitLineClamp: 1,
+              WebkitBoxOrient: 'vertical',
+              overflow: 'hidden',
+            }}
+          >
+            {product.title}
+          </Typography>
+        </Breadcrumbs>
 
       <Box
         sx={{
@@ -295,6 +304,7 @@ export default function ProductPageClient({ productId }: ProductPageClientProps)
           ))}
         </Paper>
       </Box>
-    </Container>
+      </Container>
+    </AppLayout>
   );
 }

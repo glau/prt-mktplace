@@ -24,6 +24,7 @@ import { Search, FilterList, LocationOn, ViewModule, ViewList } from '@mui/icons
 import CircularProgress from '@mui/material/CircularProgress';
 import type { Category, Product } from '../../../data/products';
 import ProductCard from '../../../components/ProductCard';
+import AppLayout from '../../../components/AppLayout';
 
 interface CategoryPageClientProps {
   slug: string;
@@ -133,49 +134,54 @@ export default function CategoryPageClient({ slug }: CategoryPageClientProps) {
 
   if (loading) {
     return (
-      <Container maxWidth="xl" sx={{ py: 6 }}>
-        <Box sx={{ display: 'flex', justifyContent: 'center' }}>
-          <CircularProgress />
-        </Box>
-      </Container>
+      <AppLayout>
+        <Container maxWidth="xl" sx={{ py: 6 }}>
+          <Box sx={{ display: 'flex', justifyContent: 'center' }}>
+            <CircularProgress />
+          </Box>
+        </Container>
+      </AppLayout>
     );
   }
 
   if (error || !category) {
     return (
-      <Container maxWidth="xl" sx={{ py: 6 }}>
-        <Paper sx={{ p: 4, textAlign: 'center' }}>
-          <Typography variant="h6" sx={{ mb: 1 }}>
-            {error ?? 'Categoria não encontrada'}
-          </Typography>
-          <Typography variant="body2" color="text.secondary">
-            Tente voltar e selecionar outra categoria.
-          </Typography>
-        </Paper>
-      </Container>
+      <AppLayout>
+        <Container maxWidth="xl" sx={{ py: 6 }}>
+          <Paper sx={{ p: 4, textAlign: 'center' }}>
+            <Typography variant="h6" sx={{ mb: 1 }}>
+              {error ?? 'Categoria não encontrada'}
+            </Typography>
+            <Typography variant="body2" color="text.secondary">
+              Tente voltar e selecionar outra categoria.
+            </Typography>
+          </Paper>
+        </Container>
+      </AppLayout>
     );
   }
 
   return (
-    <Container maxWidth="xl" sx={{ py: 3 }}>
-      <Breadcrumbs sx={{ mb: 3 }}>
-        <Link href="/" color="inherit" underline="hover">
-          Início
-        </Link>
-        <Link href="/categorias" color="inherit" underline="hover">
-          Categorias
-        </Link>
-        <Typography color="text.primary">{category.name}</Typography>
-      </Breadcrumbs>
+    <AppLayout>
+      <Container maxWidth="xl" sx={{ py: 3 }}>
+        <Breadcrumbs sx={{ mb: 3 }}>
+          <Link href="/" color="inherit" underline="hover">
+            Início
+          </Link>
+          <Link href="/categorias" color="inherit" underline="hover">
+            Categorias
+          </Link>
+          <Typography color="text.primary">{category.name}</Typography>
+        </Breadcrumbs>
 
-      <Box sx={{ mb: 3 }}>
-        <Typography variant="h4" component="h1" sx={{ fontWeight: 600, mb: 1 }}>
-          {category.name}
-        </Typography>
-        <Typography variant="body1" color="text.secondary">
-          {sortedProducts.length} anúncios encontrados
-        </Typography>
-      </Box>
+        <Box sx={{ mb: 3 }}>
+          <Typography variant="h4" component="h1" sx={{ fontWeight: 600, mb: 1 }}>
+            {category.name}
+          </Typography>
+          <Typography variant="body1" color="text.secondary">
+            {sortedProducts.length} anúncios encontrados
+          </Typography>
+        </Box>
 
       <Box
         sx={{
@@ -416,6 +422,7 @@ export default function CategoryPageClient({ slug }: CategoryPageClientProps) {
           Filtros
         </Button>
       </Box>
-    </Container>
+      </Container>
+    </AppLayout>
   );
 }

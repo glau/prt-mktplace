@@ -18,6 +18,7 @@ import { Category as CategoryIcon, TrendingUp } from '@mui/icons-material';
 import NextLink from 'next/link';
 import type { Category, Product } from '../../data/products';
 import { fetchCategories, fetchProducts } from '../../lib/api';
+import AppLayout from '../../components/AppLayout';
 
 export default function CategoriesPage() {
   const [categories, setCategories] = React.useState<Category[]>([]);
@@ -70,34 +71,39 @@ export default function CategoriesPage() {
 
   if (loading) {
     return (
-      <Container maxWidth="lg" sx={{ py: 6, display: 'flex', justifyContent: 'center' }}>
-        <CircularProgress />
-      </Container>
+      <AppLayout>
+        <Container maxWidth="lg" sx={{ py: 6, display: 'flex', justifyContent: 'center' }}>
+          <CircularProgress />
+        </Container>
+      </AppLayout>
     );
   }
 
   if (error) {
     return (
-      <Container maxWidth="lg" sx={{ py: 6 }}>
-        <Paper sx={{ p: 4, textAlign: 'center' }}>
-          <Typography variant="h6" sx={{ mb: 1 }}>{error}</Typography>
-          <Typography variant="body2" color="text.secondary">
-            Recarregue a página ou tente novamente mais tarde.
-          </Typography>
-        </Paper>
-      </Container>
+      <AppLayout>
+        <Container maxWidth="lg" sx={{ py: 6 }}>
+          <Paper sx={{ p: 4, textAlign: 'center' }}>
+            <Typography variant="h6" sx={{ mb: 1 }}>{error}</Typography>
+            <Typography variant="body2" color="text.secondary">
+              Recarregue a página ou tente novamente mais tarde.
+            </Typography>
+          </Paper>
+        </Container>
+      </AppLayout>
     );
   }
 
   return (
-    <Container maxWidth="lg" sx={{ py: 4 }}>
-      {/* Breadcrumbs */}
-      <Breadcrumbs sx={{ mb: 3 }}>
-        <MuiLink component={NextLink} href="/" color="inherit" underline="hover">
-          Início
-        </MuiLink>
-        <Typography color="text.primary">Categorias</Typography>
-      </Breadcrumbs>
+    <AppLayout>
+      <Container maxWidth="lg" sx={{ py: 4 }}>
+        {/* Breadcrumbs */}
+        <Breadcrumbs sx={{ mb: 3 }}>
+          <MuiLink component={NextLink} href="/" color="inherit" underline="hover">
+            Início
+          </MuiLink>
+          <Typography color="text.primary">Categorias</Typography>
+        </Breadcrumbs>
 
       {/* Header */}
       <Box sx={{ mb: 4 }}>
@@ -146,45 +152,46 @@ export default function CategoriesPage() {
 
       <Divider sx={{ mb: 4 }} />
 
-      {/* Categories Grid */}
-      <Box
-        sx={{
-          display: 'grid',
-          gridTemplateColumns: {
-            xs: 'repeat(1, 1fr)',
-            sm: 'repeat(2, 1fr)',
-            md: 'repeat(3, 1fr)',
-            lg: 'repeat(3, 1fr)',
-          },
-          gap: 3,
-        }}
-      >
-        {categories.map((category) => (
-          <Card
-            key={category.id}
-            sx={{
-              height: '100%',
-              borderRadius: 2,
-              boxShadow: '0 2px 8px rgba(0,0,0,0.08)',
-            }}
-          >
-            <CardActionArea component={NextLink} href={`/categoria/${category.id}`} sx={{ p: 3 }}>
-              <CardContent sx={{ p: 0 }}>
-                <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
-                  <CategoryIcon sx={{ mr: 1, color: 'primary.main' }} />
-                  <Typography variant="h5" sx={{ fontWeight: 600 }}>
-                    {category.name}
+        {/* Categories Grid */}
+        <Box
+          sx={{
+            display: 'grid',
+            gridTemplateColumns: {
+              xs: 'repeat(1, 1fr)',
+              sm: 'repeat(2, 1fr)',
+              md: 'repeat(3, 1fr)',
+              lg: 'repeat(3, 1fr)',
+            },
+            gap: 3,
+          }}
+        >
+          {categories.map((category) => (
+            <Card
+              key={category.id}
+              sx={{
+                height: '100%',
+                borderRadius: 2,
+                boxShadow: '0 2px 8px rgba(0,0,0,0.08)',
+              }}
+            >
+              <CardActionArea component={NextLink} href={`/categoria/${category.id}`} sx={{ p: 3 }}>
+                <CardContent sx={{ p: 0 }}>
+                  <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
+                    <CategoryIcon sx={{ mr: 1, color: 'primary.main' }} />
+                    <Typography variant="h5" sx={{ fontWeight: 600 }}>
+                      {category.name}
+                    </Typography>
+                  </Box>
+                  <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+                    Veja ofertas de {category.name.toLowerCase()} disponíveis para compra e venda.
                   </Typography>
-                </Box>
-                <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
-                  Veja ofertas de {category.name.toLowerCase()} disponíveis para compra e venda.
-                </Typography>
-                <Chip label={`${category.count} anúncios`} color="primary" variant="outlined" />
-              </CardContent>
-            </CardActionArea>
-          </Card>
-        ))}
-      </Box>
-    </Container>
+                  <Chip label={`${category.count} anúncios`} color="primary" variant="outlined" />
+                </CardContent>
+              </CardActionArea>
+            </Card>
+          ))}
+        </Box>
+      </Container>
+    </AppLayout>
   );
 }
