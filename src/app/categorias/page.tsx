@@ -12,14 +12,82 @@ import {
   Breadcrumbs,
   Link as MuiLink,
   Paper,
+  CircularProgress,
 } from '@mui/material';
 import { Category as CategoryIcon, TrendingUp } from '@mui/icons-material';
 import NextLink from 'next/link';
-import { categories, products } from '../../data/products';
+import type { Category, Product } from '../../data/products';
+import { fetchCategories, fetchProducts } from '../../lib/api';
 
 export default function CategoriesPage() {
+  const [categories, setCategories] = React.useState<Category[]>([]);
+  const [products, setProducts] = React.useState<Product[]>([]);
+  const [loading, setLoading] = React.useState(true);
+  const [error, setError] = React.useState<string | null>(null);
+
+  React.useEffect(() => {
+    let active = true;
+
+    async function load() {
+      setLoading(true);
+      setError(null);
+
+      try {
+        const [categoriesData, productsData] = await Promise.all([
+          fetchCategories(),
+          fetchProducts(),
+        ]);
+
+        if (!active) return;
+
+        setCategories(categoriesData);
+        setProducts(productsData);
+      } catch (err) {
+        console.error(err);
+        if (active) {
+          setError('Não foi possível carregar as categorias.');
+        }
+      } finally {
+        if (active) {
+          setLoading(false);
+        }
+      }
+    }
+
+    load();
+
+    return () => {
+      active = false;
+    };
+  }, []);
+
   const totalProducts = products.length;
   const totalCategories = categories.length;
+  const featuredCategory = categories.reduce<Category | null>((acc, current) => {
+    if (!acc) return current;
+    return current.count > acc.count ? current : acc;
+  }, null);
+
+  if (loading) {
+    return (
+      <Container maxWidth="lg" sx={{ py: 6, display: 'flex', justifyContent: 'center' }}>
+        <CircularProgress />
+      </Container>
+    );
+  }
+
+  if (error) {
+    return (
+      <Container maxWidth="lg" sx={{ py: 6 }}>
+        <Paper sx={{ p: 4, textAlign: 'center' }}>
+          <Typography variant="h6" sx={{ mb: 1 }}>{error}</Typography>
+          <Typography variant="body2" color="text.secondary">
+            Recarregue a página ou tente novamente mais tarde.
+          </Typography>
+        </Paper>
+      </Container>
+    );
+  }
 
   return (
     <Container maxWidth="lg" sx={{ py: 4 }}>
@@ -70,7 +138,7 @@ export default function CategoriesPage() {
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
             <TrendingUp color="primary" fontSize="small" />
             <Typography variant="h6" sx={{ fontWeight: 600 }}>
-              {categories[0]?.name ?? 'N/A'}
+              {featuredCategory?.name ?? 'N/A'}
             </Typography>
           </Box>
         </Box>

@@ -15,7 +15,13 @@ export interface Product {
   createdAt: string;
 }
 
-export const categories = [
+export interface Category {
+  id: string;
+  name: string;
+  count: number;
+}
+
+export const categories: Category[] = [
   { id: 'borracha', name: 'Borracha', count: 45 },
   { id: 'plastico', name: 'Plástico', count: 78 },
   { id: 'metal', name: 'Metal', count: 32 },
@@ -33,9 +39,9 @@ export const products: Product[] = [
     category: 'borracha',
     description: 'Placas de borracha industrial de alta qualidade, ideais para vedação e isolamento. Material resistente e durável.',
     images: [
-      'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=400',
-      'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=400',
-      'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=400',
+      'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?auto=format&fit=crop&w=1200&q=80',
+      'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?auto=format&fit=crop&w=1200&q=80',
+      'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?auto=format&fit=crop&w=1200&q=80',
     ],
     seller: {
       name: 'Indústria Silva',
@@ -59,8 +65,8 @@ export const products: Product[] = [
     category: 'borracha',
     description: 'Pneus usados em bom estado, ideais para recauchutagem ou reciclagem.',
     images: [
-      'https://images.unsplash.com/photo-1558618047-3c8c76ca7d13?w=400',
-      'https://images.unsplash.com/photo-1558618047-3c8c76ca7d13?w=400',
+      'https://images.unsplash.com/photo-1558618047-3c8c76ca7d13?auto=format&fit=crop&w=1200&q=80',
+      'https://images.unsplash.com/photo-1558618047-3c8c76ca7d13?auto=format&fit=crop&w=1200&q=80',
     ],
     seller: {
       name: 'Auto Peças Central',
@@ -83,7 +89,7 @@ export const products: Product[] = [
     category: 'plastico',
     description: 'Garrafas PET transparentes, limpas e prensadas. Ideal para reciclagem.',
     images: [
-      'https://images.unsplash.com/photo-1572879435493-37c9703180c6?w=400',
+      'https://images.unsplash.com/photo-1572879435493-37c9703180c6?auto=format&fit=crop&w=1200&q=80',
     ],
     seller: {
       name: 'EcoRecicla BH',
@@ -106,7 +112,7 @@ export const products: Product[] = [
     category: 'metal',
     description: 'Sucata de alumínio limpa, separada e pronta para fundição.',
     images: [
-      'https://images.unsplash.com/photo-1558618047-3c8c76ca7d13?w=400',
+      'https://images.unsplash.com/photo-1558618047-3c8c76ca7d13?auto=format&fit=crop&w=1200&q=80',
     ],
     seller: {
       name: 'Metais do Sul',
@@ -129,7 +135,7 @@ export const products: Product[] = [
     category: 'borracha',
     description: 'Mangueiras de borracha flexível para uso industrial. Diversas medidas disponíveis.',
     images: [
-      'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=400',
+      'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?auto=format&fit=crop&w=1200&q=80',
     ],
     seller: {
       name: 'Borrachas Paraná',
@@ -152,7 +158,7 @@ export const products: Product[] = [
     category: 'borracha',
     description: 'Tapetes de borracha antiderrapante, ideais para áreas industriais e comerciais.',
     images: [
-      'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=400',
+      'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?auto=format&fit=crop&w=1200&q=80',
     ],
     seller: {
       name: 'Segurança Industrial BA',

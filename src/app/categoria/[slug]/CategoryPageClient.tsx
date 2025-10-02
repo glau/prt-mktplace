@@ -7,7 +7,6 @@ import {
   Breadcrumbs,
   Link,
   FormControl,
-  InputLabel,
   Select,
   MenuItem,
   TextField,
@@ -21,44 +20,103 @@ import {
   Checkbox,
   FormGroup,
 } from '@mui/material';
-import {
-  Search,
-  FilterList,
-  LocationOn,
-  Category as CategoryIcon,
-  ViewModule,
-  ViewList,
-} from '@mui/icons-material';
-import { Product } from '../../../data/products';
+import { Search, FilterList, LocationOn, ViewModule, ViewList } from '@mui/icons-material';
+import CircularProgress from '@mui/material/CircularProgress';
+import type { Category, Product } from '../../../data/products';
 import ProductCard from '../../../components/ProductCard';
 
 interface CategoryPageClientProps {
-  category: {
-    id: string;
-    name: string;
-    count: number;
-  };
-  categoryProducts: Product[];
+  slug: string;
 }
 
-export default function CategoryPageClient({ category, categoryProducts }: CategoryPageClientProps) {
+type CategoryResponse = { category: Category };
+type ProductsResponse = { products: Product[] };
+
+export default function CategoryPageClient({ slug }: CategoryPageClientProps) {
+  const [category, setCategory] = React.useState<Category | null>(null);
+  const [products, setProducts] = React.useState<Product[]>([]);
+  const [priceBounds, setPriceBounds] = React.useState<[number, number]>([0, 0]);
+  const [priceRange, setPriceRange] = React.useState<[number, number]>([0, 0]);
   const [sortBy, setSortBy] = React.useState('recent');
   const [searchTerm, setSearchTerm] = React.useState('');
   const [locationFilter, setLocationFilter] = React.useState('');
-  const [priceRange, setPriceRange] = React.useState<number[]>([0, 100]);
   const [selectedConditions, setSelectedConditions] = React.useState<string[]>([]);
-  const [viewMode, setViewMode] = React.useState('grid');
-
-  const maxPrice = Math.max(...categoryProducts.map(p => p.price));
+  const [viewMode, setViewMode] = React.useState<'grid' | 'list'>('grid');
+  const [loading, setLoading] = React.useState(true);
+  const [error, setError] = React.useState<string | null>(null);
 
   React.useEffect(() => {
-    setPriceRange([0, maxPrice]);
-  }, [maxPrice]);
+    let active = true;
 
-  const filteredProducts = categoryProducts.filter(product =>
+    async function loadData() {
+      setLoading(true);
+      setError(null);
+
+      try {
+        const [categoryRes, productsRes] = await Promise.all([
+          fetch(`/api/categories/${slug}`),
+          fetch(`/api/products?category=${slug}`),
+        ]);
+
+        if (!active) {
+          return;
+        }
+
+        if (!categoryRes.ok) {
+          throw new Error('Não foi possível carregar a categoria');
+        }
+
+        const categoryJson = (await categoryRes.json()) as CategoryResponse;
+        setCategory(categoryJson.category);
+
+        if (!productsRes.ok) {
+          throw new Error('Não foi possível carregar os produtos');
+        }
+
+        const productsJson = (await productsRes.json()) as ProductsResponse;
+        setProducts(productsJson.products);
+
+        const max = productsJson.products.length > 0
+          ? Math.max(...productsJson.products.map((product) => product.price))
+          : 0;
+
+        setPriceBounds([0, max]);
+        setPriceRange([0, max || 0]);
+        setSelectedConditions([]);
+      } catch (loadError) {
+        console.error(loadError);
+        setError('Não foi possível carregar os dados da categoria.');
+        setCategory(null);
+        setProducts([]);
+        setPriceBounds([0, 0]);
+        setPriceRange([0, 0]);
+      } finally {
+        if (active) {
+          setLoading(false);
+        }
+      }
+    }
+
+    loadData();
+
+    return () => {
+      active = false;
+    };
+  }, [slug]);
+
+  const handleConditionChange = (condition: string) => {
+    setSelectedConditions((prev) =>
+      prev.includes(condition)
+        ? prev.filter((item) => item !== condition)
+        : [...prev, condition]
+    );
+  };
+
+  const filteredProducts = products.filter((product) =>
     product.title.toLowerCase().includes(searchTerm.toLowerCase()) &&
-    (locationFilter === '' || product.location.includes(locationFilter)) &&
-    product.price >= priceRange[0] && product.price <= priceRange[1]
+    (locationFilter === '' || product.location.toLowerCase().includes(locationFilter.toLowerCase())) &&
+    product.price >= priceRange[0] &&
+    product.price <= priceRange[1]
   );
 
   const sortedProducts = [...filteredProducts].sort((a, b) => {
@@ -73,17 +131,33 @@ export default function CategoryPageClient({ category, categoryProducts }: Categ
     }
   });
 
-  const handleConditionChange = (condition: string) => {
-    setSelectedConditions(prev =>
-      prev.includes(condition)
-        ? prev.filter(c => c !== condition)
-        : [...prev, condition]
+  if (loading) {
+    return (
+      <Container maxWidth="xl" sx={{ py: 6 }}>
+        <Box sx={{ display: 'flex', justifyContent: 'center' }}>
+          <CircularProgress />
+        </Box>
+      </Container>
     );
-  };
+  }
+
+  if (error || !category) {
+    return (
+      <Container maxWidth="xl" sx={{ py: 6 }}>
+        <Paper sx={{ p: 4, textAlign: 'center' }}>
+          <Typography variant="h6" sx={{ mb: 1 }}>
+            {error ?? 'Categoria não encontrada'}
+          </Typography>
+          <Typography variant="body2" color="text.secondary">
+            Tente voltar e selecionar outra categoria.
+          </Typography>
+        </Paper>
+      </Container>
+    );
+  }
 
   return (
     <Container maxWidth="xl" sx={{ py: 3 }}>
-      {/* Breadcrumbs */}
       <Breadcrumbs sx={{ mb: 3 }}>
         <Link href="/" color="inherit" underline="hover">
           Início
@@ -94,7 +168,6 @@ export default function CategoryPageClient({ category, categoryProducts }: Categ
         <Typography color="text.primary">{category.name}</Typography>
       </Breadcrumbs>
 
-      {/* Header */}
       <Box sx={{ mb: 3 }}>
         <Typography variant="h4" component="h1" sx={{ fontWeight: 600, mb: 1 }}>
           {category.name}
@@ -104,7 +177,6 @@ export default function CategoryPageClient({ category, categoryProducts }: Categ
         </Typography>
       </Box>
 
-      {/* Main Layout: Sidebar + Content */}
       <Box
         sx={{
           display: 'grid',
@@ -115,14 +187,12 @@ export default function CategoryPageClient({ category, categoryProducts }: Categ
           gap: 3,
         }}
       >
-        {/* Left Sidebar - Filters */}
         <Box sx={{ display: { xs: 'none', md: 'block' } }}>
           <Paper sx={{ p: 3, position: 'sticky', top: 20 }}>
             <Typography variant="h6" sx={{ mb: 3, fontWeight: 600 }}>
               Filtros
             </Typography>
 
-            {/* Search */}
             <Box sx={{ mb: 3 }}>
               <Typography variant="subtitle2" sx={{ mb: 1, fontWeight: 600 }}>
                 Buscar
@@ -132,7 +202,7 @@ export default function CategoryPageClient({ category, categoryProducts }: Categ
                 size="small"
                 placeholder="Buscar produtos..."
                 value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
+                onChange={(event) => setSearchTerm(event.target.value)}
                 InputProps={{
                   startAdornment: (
                     <InputAdornment position="start">
@@ -145,7 +215,6 @@ export default function CategoryPageClient({ category, categoryProducts }: Categ
 
             <Divider sx={{ my: 2 }} />
 
-            {/* Location */}
             <Box sx={{ mb: 3 }}>
               <Typography variant="subtitle2" sx={{ mb: 1, fontWeight: 600 }}>
                 Localização
@@ -155,32 +224,34 @@ export default function CategoryPageClient({ category, categoryProducts }: Categ
                 size="small"
                 placeholder="Cidade, Estado"
                 value={locationFilter}
-                onChange={(e) => setLocationFilter(e.target.value)}
-                InputProps={{
-                  startAdornment: (
-                    <InputAdornment position="start">
-                      <LocationOn fontSize="small" />
-                    </InputAdornment>
-                  ),
+                onChange={(event) => setLocationFilter(event.target.value)}
+                slotProps={{
+                  input: {
+                    startAdornment: (
+                      <InputAdornment position="start">
+                        <LocationOn fontSize="small" />
+                      </InputAdornment>
+                    ),
+                  },
                 }}
               />
             </Box>
 
             <Divider sx={{ my: 2 }} />
 
-            {/* Price Range */}
             <Box sx={{ mb: 3 }}>
               <Typography variant="subtitle2" sx={{ mb: 2, fontWeight: 600 }}>
                 Faixa de Preço
               </Typography>
               <Slider
                 value={priceRange}
-                onChange={(_, newValue) => setPriceRange(newValue as number[])}
+                onChange={(_, newValue) => setPriceRange(newValue as [number, number])}
                 valueLabelDisplay="auto"
-                min={0}
-                max={maxPrice}
+                min={priceBounds[0]}
+                max={priceBounds[1] || 0}
                 valueLabelFormat={(value) => `R$ ${value.toFixed(2)}`}
                 sx={{ mb: 1 }}
+                disabled={priceBounds[1] === 0}
               />
               <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
                 <Typography variant="caption" color="text.secondary">
@@ -194,7 +265,6 @@ export default function CategoryPageClient({ category, categoryProducts }: Categ
 
             <Divider sx={{ my: 2 }} />
 
-            {/* Condition */}
             <Box sx={{ mb: 3 }}>
               <Typography variant="subtitle2" sx={{ mb: 1, fontWeight: 600 }}>
                 Estado
@@ -216,14 +286,13 @@ export default function CategoryPageClient({ category, categoryProducts }: Categ
               </FormGroup>
             </Box>
 
-            {/* Clear Filters */}
             <Button
               fullWidth
               variant="outlined"
               onClick={() => {
                 setSearchTerm('');
                 setLocationFilter('');
-                setPriceRange([0, maxPrice]);
+                setPriceRange(priceBounds);
                 setSelectedConditions([]);
               }}
             >
@@ -232,9 +301,7 @@ export default function CategoryPageClient({ category, categoryProducts }: Categ
           </Paper>
         </Box>
 
-        {/* Right Content Area */}
         <Box>
-          {/* Top Bar - Sort and View Options */}
           <Paper sx={{ p: 2, mb: 3 }}>
             <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
@@ -244,7 +311,7 @@ export default function CategoryPageClient({ category, categoryProducts }: Categ
                 <FormControl size="small" sx={{ minWidth: 150 }}>
                   <Select
                     value={sortBy}
-                    onChange={(e) => setSortBy(e.target.value)}
+                    onChange={(event) => setSortBy(event.target.value)}
                     displayEmpty
                   >
                     <MenuItem value="recent">Mais recentes</MenuItem>
@@ -278,7 +345,6 @@ export default function CategoryPageClient({ category, categoryProducts }: Categ
             </Box>
           </Paper>
 
-          {/* Active Filters */}
           {(searchTerm || locationFilter || selectedConditions.length > 0) && (
             <Box sx={{ mb: 3 }}>
               <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
@@ -311,7 +377,6 @@ export default function CategoryPageClient({ category, categoryProducts }: Categ
             </Box>
           )}
 
-          {/* Products Grid */}
           {sortedProducts.length > 0 ? (
             <Box
               sx={{
@@ -342,7 +407,6 @@ export default function CategoryPageClient({ category, categoryProducts }: Categ
         </Box>
       </Box>
 
-      {/* Mobile Filters Button */}
       <Box sx={{ display: { xs: 'block', md: 'none' }, position: 'fixed', bottom: 20, right: 20 }}>
         <Button
           variant="contained"

@@ -13,6 +13,7 @@ import {
   Rating,
   Divider,
   IconButton,
+  CircularProgress,
 } from '@mui/material';
 import {
   Share,
@@ -24,19 +25,19 @@ import {
   Message,
   Schedule,
 } from '@mui/icons-material';
-import { Product } from '../../../data/products';
+import type { Product, Category } from '../../../data/products';
 import SimpleImageGallery from '../../../components/SimpleImageGallery';
+import { fetchProductById, fetchCategoryById } from '../../../lib/api';
 
 interface ProductPageClientProps {
-  product: Product;
-  category: {
-    id: string;
-    name: string;
-    count: number;
-  };
+  productId: string;
 }
 
-export default function ProductPageClient({ product, category }: ProductPageClientProps) {
+export default function ProductPageClient({ productId }: ProductPageClientProps) {
+  const [product, setProduct] = React.useState<Product | null>(null);
+  const [category, setCategory] = React.useState<Category | null>(null);
+  const [loading, setLoading] = React.useState(true);
+  const [error, setError] = React.useState<string | null>(null);
   const [isFavorite, setIsFavorite] = React.useState(false);
 
   const handleFavoriteClick = () => {
@@ -46,6 +47,69 @@ export default function ProductPageClient({ product, category }: ProductPageClie
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString('pt-BR');
   };
+
+  React.useEffect(() => {
+    let active = true;
+
+    async function loadProduct() {
+      setLoading(true);
+      setError(null);
+
+      try {
+        const productData = await fetchProductById(productId);
+        if (!active) return;
+
+        setProduct(productData);
+
+        const categoryData = await fetchCategoryById(productData.category);
+        if (!active) return;
+
+        setCategory(categoryData);
+      } catch (err) {
+        console.error(err);
+        if (active) {
+          setError('Não foi possível carregar as informações do produto.');
+          setProduct(null);
+          setCategory(null);
+        }
+      } finally {
+        if (active) {
+          setLoading(false);
+        }
+      }
+    }
+
+    loadProduct();
+
+    return () => {
+      active = false;
+    };
+  }, [productId]);
+
+  if (loading) {
+    return (
+      <Container maxWidth="lg" sx={{ py: 6 }}>
+        <Box sx={{ display: 'flex', justifyContent: 'center' }}>
+          <CircularProgress />
+        </Box>
+      </Container>
+    );
+  }
+
+  if (error || !product || !category) {
+    return (
+      <Container maxWidth="lg" sx={{ py: 6 }}>
+        <Paper sx={{ p: 4, textAlign: 'center' }}>
+          <Typography variant="h6" sx={{ mb: 1 }}>
+            {error ?? 'Produto não encontrado'}
+          </Typography>
+          <Typography variant="body2" color="text.secondary">
+            Tente voltar e selecionar outro produto.
+          </Typography>
+        </Paper>
+      </Container>
+    );
+  }
 
   return (
     <Container maxWidth="lg" sx={{ py: 3 }}>

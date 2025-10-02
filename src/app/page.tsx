@@ -3,24 +3,82 @@ import React from 'react';
 import {
   Container,
   Typography,
-  Grid,
   Card,
   CardContent,
   CardActionArea,
   Box,
   Chip,
   Paper,
+  CircularProgress,
 } from '@mui/material';
-import {
-  Category as CategoryIcon,
-  TrendingUp,
-} from '@mui/icons-material';
+import { Category as CategoryIcon, TrendingUp } from '@mui/icons-material';
 import Link from 'next/link';
-import { categories, products } from '../data/products';
 import ProductCard from '../components/ProductCard';
+import type { Category, Product } from '../data/products';
+import { fetchCategories, fetchProducts } from '../lib/api';
 
 export default function Home() {
-  const featuredProducts = products.slice(0, 8);
+  const [categories, setCategories] = React.useState<Category[]>([]);
+  const [featuredProducts, setFeaturedProducts] = React.useState<Product[]>([]);
+  const [loading, setLoading] = React.useState(true);
+  const [error, setError] = React.useState<string | null>(null);
+
+  React.useEffect(() => {
+    let active = true;
+
+    async function load() {
+      setLoading(true);
+      setError(null);
+
+      try {
+        const [categoriesData, productsData] = await Promise.all([
+          fetchCategories(),
+          fetchProducts(),
+        ]);
+
+        if (!active) return;
+
+        setCategories(categoriesData);
+        setFeaturedProducts(productsData.slice(0, 8));
+      } catch (err) {
+        console.error(err);
+        if (active) {
+          setError('Não foi possível carregar os dados.');
+        }
+      } finally {
+        if (active) {
+          setLoading(false);
+        }
+      }
+    }
+
+    load();
+
+    return () => {
+      active = false;
+    };
+  }, []);
+
+  if (loading) {
+    return (
+      <Container maxWidth="lg" sx={{ py: 6, display: 'flex', justifyContent: 'center' }}>
+        <CircularProgress />
+      </Container>
+    );
+  }
+
+  if (error) {
+    return (
+      <Container maxWidth="lg" sx={{ py: 6 }}>
+        <Paper sx={{ p: 4, textAlign: 'center' }}>
+          <Typography variant="h6" sx={{ mb: 1 }}>{error}</Typography>
+          <Typography variant="body2" color="text.secondary">
+            Recarregue a página ou tente novamente mais tarde.
+          </Typography>
+        </Paper>
+      </Container>
+    );
+  }
 
   return (
     <Container maxWidth="lg" sx={{ py: 4 }}>
