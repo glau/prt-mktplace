@@ -25,6 +25,7 @@ import {
 } from '@mui/icons-material';
 import { useColorMode } from '../app/providers/ColorModeProvider';
 import Image from 'next/image';
+import Link from 'next/link';
 
 export interface MarketplaceAppBarProps {
   showAuthButtons?: boolean;
@@ -70,13 +71,15 @@ export default function MarketplaceAppBar({
           >
             <MenuIcon />
           </IconButton>
-          <Image
-            src="/assets/b2bluelogo.svg"
-            alt="B2Blue Marketplace"
-            width={120}
-            height={48}
-            priority
-          />
+          <Link href="/" style={{ display: 'inline-flex', alignItems: 'center' }} aria-label="Ir para a página inicial">
+            <Image
+              src="/assets/b2bluelogo.svg"
+              alt="B2Blue Compra, Venda e Gerenciamento de Resíduos"
+              width={120}
+              height={48}
+              priority
+            />
+          </Link>
         </Stack>
 
         <Stack
