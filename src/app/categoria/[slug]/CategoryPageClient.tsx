@@ -19,8 +19,11 @@ import {
   FormControlLabel,
   Checkbox,
   FormGroup,
+  Drawer,
+  IconButton,
+  Stack,
 } from '@mui/material';
-import { Search, FilterList, LocationOn, ViewModule, ViewList } from '@mui/icons-material';
+import { Search, FilterList, LocationOn, ViewModule, ViewList, Close } from '@mui/icons-material';
 import CircularProgress from '@mui/material/CircularProgress';
 import type { Category, Product } from '../../../data/products';
 import ProductCard from '../../../components/ProductCard';
@@ -45,6 +48,7 @@ export default function CategoryPageClient({ slug }: CategoryPageClientProps) {
   const [viewMode, setViewMode] = React.useState<'grid' | 'list'>('grid');
   const [loading, setLoading] = React.useState(true);
   const [error, setError] = React.useState<string | null>(null);
+  const [mobileFiltersOpen, setMobileFiltersOpen] = React.useState(false);
 
   React.useEffect(() => {
     let active = true;
@@ -161,6 +165,110 @@ export default function CategoryPageClient({ slug }: CategoryPageClientProps) {
     );
   }
 
+  const filtersContent = (
+    <Stack spacing={3} sx={{ mt: 3 }}>
+      <Box>
+        <Typography variant="subtitle2" sx={{ mb: 1, fontWeight: 600 }}>
+          Buscar
+        </Typography>
+        <TextField
+          fullWidth
+          size="small"
+          placeholder="Buscar produtos..."
+          value={searchTerm}
+          onChange={(event) => setSearchTerm(event.target.value)}
+          InputProps={{
+            startAdornment: (
+              <InputAdornment position="start">
+                <Search fontSize="small" />
+              </InputAdornment>
+            ),
+          }}
+        />
+      </Box>
+
+      <Box>
+        <Typography variant="subtitle2" sx={{ mb: 1, fontWeight: 600 }}>
+          Localização
+        </Typography>
+        <TextField
+          fullWidth
+          size="small"
+          placeholder="Cidade, Estado"
+          value={locationFilter}
+          onChange={(event) => setLocationFilter(event.target.value)}
+          slotProps={{
+            input: {
+              startAdornment: (
+                <InputAdornment position="start">
+                  <LocationOn fontSize="small" />
+                </InputAdornment>
+              ),
+            },
+          }}
+        />
+      </Box>
+
+      <Box>
+        <Typography variant="subtitle2" sx={{ mb: 2, fontWeight: 600 }}>
+          Faixa de Preço
+        </Typography>
+        <Slider
+          value={priceRange}
+          onChange={(_, newValue) => setPriceRange(newValue as [number, number])}
+          valueLabelDisplay="auto"
+          min={priceBounds[0]}
+          max={priceBounds[1] || 0}
+          valueLabelFormat={(value) => `R$ ${value.toFixed(2)}`}
+          sx={{ mb: 1 }}
+          disabled={priceBounds[1] === 0}
+        />
+        <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
+          <Typography variant="caption" color="text.secondary">
+            R$ {priceRange[0].toFixed(2)}
+          </Typography>
+          <Typography variant="caption" color="text.secondary">
+            R$ {priceRange[1].toFixed(2)}
+          </Typography>
+        </Box>
+      </Box>
+
+      <Box>
+        <Typography variant="subtitle2" sx={{ mb: 1, fontWeight: 600 }}>
+          Estado
+        </Typography>
+        <FormGroup>
+          {['Novo', 'Usado - Excelente', 'Usado - Bom', 'Usado - Regular'].map((condition) => (
+            <FormControlLabel
+              key={condition}
+              control={
+                <Checkbox
+                  size="small"
+                  checked={selectedConditions.includes(condition)}
+                  onChange={() => handleConditionChange(condition)}
+                />
+              }
+              label={<Typography variant="body2">{condition}</Typography>}
+            />
+          ))}
+        </FormGroup>
+      </Box>
+
+      <Button
+        fullWidth
+        variant="outlined"
+        onClick={() => {
+          setSearchTerm('');
+          setLocationFilter('');
+          setPriceRange(priceBounds);
+          setSelectedConditions([]);
+        }}
+      >
+        Limpar Filtros
+      </Button>
+    </Stack>
+  );
+
   return (
     <AppLayout>
       <Container maxWidth="xl" sx={{ py: 3 }}>
@@ -195,139 +303,40 @@ export default function CategoryPageClient({ slug }: CategoryPageClientProps) {
       >
         <Box sx={{ display: { xs: 'none', md: 'block' } }}>
           <Paper sx={{ p: 3, position: 'sticky', top: 20 }}>
-            <Typography variant="h6" sx={{ mb: 3, fontWeight: 600 }}>
+            <Typography variant="h6" sx={{ fontWeight: 600 }}>
               Filtros
             </Typography>
-
-            <Box sx={{ mb: 3 }}>
-              <Typography variant="subtitle2" sx={{ mb: 1, fontWeight: 600 }}>
-                Buscar
-              </Typography>
-              <TextField
-                fullWidth
-                size="small"
-                placeholder="Buscar produtos..."
-                value={searchTerm}
-                onChange={(event) => setSearchTerm(event.target.value)}
-                InputProps={{
-                  startAdornment: (
-                    <InputAdornment position="start">
-                      <Search fontSize="small" />
-                    </InputAdornment>
-                  ),
-                }}
-              />
-            </Box>
-
-            <Divider sx={{ my: 2 }} />
-
-            <Box sx={{ mb: 3 }}>
-              <Typography variant="subtitle2" sx={{ mb: 1, fontWeight: 600 }}>
-                Localização
-              </Typography>
-              <TextField
-                fullWidth
-                size="small"
-                placeholder="Cidade, Estado"
-                value={locationFilter}
-                onChange={(event) => setLocationFilter(event.target.value)}
-                slotProps={{
-                  input: {
-                    startAdornment: (
-                      <InputAdornment position="start">
-                        <LocationOn fontSize="small" />
-                      </InputAdornment>
-                    ),
-                  },
-                }}
-              />
-            </Box>
-
-            <Divider sx={{ my: 2 }} />
-
-            <Box sx={{ mb: 3 }}>
-              <Typography variant="subtitle2" sx={{ mb: 2, fontWeight: 600 }}>
-                Faixa de Preço
-              </Typography>
-              <Slider
-                value={priceRange}
-                onChange={(_, newValue) => setPriceRange(newValue as [number, number])}
-                valueLabelDisplay="auto"
-                min={priceBounds[0]}
-                max={priceBounds[1] || 0}
-                valueLabelFormat={(value) => `R$ ${value.toFixed(2)}`}
-                sx={{ mb: 1 }}
-                disabled={priceBounds[1] === 0}
-              />
-              <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
-                <Typography variant="caption" color="text.secondary">
-                  R$ {priceRange[0].toFixed(2)}
-                </Typography>
-                <Typography variant="caption" color="text.secondary">
-                  R$ {priceRange[1].toFixed(2)}
-                </Typography>
-              </Box>
-            </Box>
-
-            <Divider sx={{ my: 2 }} />
-
-            <Box sx={{ mb: 3 }}>
-              <Typography variant="subtitle2" sx={{ mb: 1, fontWeight: 600 }}>
-                Estado
-              </Typography>
-              <FormGroup>
-                {['Novo', 'Usado - Excelente', 'Usado - Bom', 'Usado - Regular'].map((condition) => (
-                  <FormControlLabel
-                    key={condition}
-                    control={
-                      <Checkbox
-                        size="small"
-                        checked={selectedConditions.includes(condition)}
-                        onChange={() => handleConditionChange(condition)}
-                      />
-                    }
-                    label={<Typography variant="body2">{condition}</Typography>}
-                  />
-                ))}
-              </FormGroup>
-            </Box>
-
-            <Button
-              fullWidth
-              variant="outlined"
-              onClick={() => {
-                setSearchTerm('');
-                setLocationFilter('');
-                setPriceRange(priceBounds);
-                setSelectedConditions([]);
-              }}
-            >
-              Limpar Filtros
-            </Button>
+            {filtersContent}
           </Paper>
         </Box>
 
         <Box>
           <Paper sx={{ p: 2, mb: 3 }}>
-            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-              <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+            <Stack
+              direction={{ xs: 'column', sm: 'row' }}
+              spacing={{ xs: 2, sm: 3 }}
+              alignItems={{ xs: 'stretch', sm: 'center' }}
+              justifyContent="space-between"
+            >
+              <Stack direction={{ xs: 'column', sm: 'row' }} spacing={{ xs: 1.5, sm: 2 }} alignItems={{ xs: 'stretch', sm: 'center' }}>
                 <Typography variant="body2" color="text.secondary">
                   Ordenar por:
                 </Typography>
-                <FormControl size="small" sx={{ minWidth: 150 }}>
+                <FormControl size="small" sx={{ minWidth: { xs: 'auto', sm: 150 }, flexGrow: { xs: 1, sm: 0 } }}>
                   <Select
                     value={sortBy}
                     onChange={(event) => setSortBy(event.target.value)}
                     displayEmpty
+                    fullWidth
                   >
                     <MenuItem value="recent">Mais recentes</MenuItem>
                     <MenuItem value="price-low">Menor preço</MenuItem>
                     <MenuItem value="price-high">Maior preço</MenuItem>
                   </Select>
                 </FormControl>
-              </Box>
+              </Stack>
 
-              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+              <Stack direction="row" spacing={1} alignItems="center" justifyContent={{ xs: 'flex-start', sm: 'flex-end' }}>
                 <Typography variant="body2" color="text.secondary">
                   Visualização:
                 </Typography>
@@ -335,7 +344,7 @@ export default function CategoryPageClient({ slug }: CategoryPageClientProps) {
                   size="small"
                   variant={viewMode === 'grid' ? 'contained' : 'outlined'}
                   onClick={() => setViewMode('grid')}
-                  sx={{ minWidth: 'auto', p: 1 }}
+                  sx={{ minWidth: 40, p: 1 }}
                 >
                   <ViewModule fontSize="small" />
                 </Button>
@@ -343,12 +352,12 @@ export default function CategoryPageClient({ slug }: CategoryPageClientProps) {
                   size="small"
                   variant={viewMode === 'list' ? 'contained' : 'outlined'}
                   onClick={() => setViewMode('list')}
-                  sx={{ minWidth: 'auto', p: 1 }}
+                  sx={{ minWidth: 40, p: 1 }}
                 >
                   <ViewList fontSize="small" />
                 </Button>
-              </Box>
-            </Box>
+              </Stack>
+            </Stack>
           </Paper>
 
           {(searchTerm || locationFilter || selectedConditions.length > 0) && (
@@ -417,11 +426,30 @@ export default function CategoryPageClient({ slug }: CategoryPageClientProps) {
         <Button
           variant="contained"
           startIcon={<FilterList />}
-          sx={{ borderRadius: '50px' }}
+          sx={{ borderRadius: '50px', boxShadow: 6 }}
+          onClick={() => setMobileFiltersOpen(true)}
         >
           Filtros
         </Button>
       </Box>
+      <Drawer
+        anchor="right"
+        open={mobileFiltersOpen}
+        onClose={() => setMobileFiltersOpen(false)}
+        ModalProps={{ keepMounted: true }}
+        PaperProps={{ sx: { width: 320, maxWidth: '100%', p: 3 } }}
+      >
+        <Stack direction="row" alignItems="center" justifyContent="space-between" sx={{ mb: 2 }}>
+          <Typography variant="h6" sx={{ fontWeight: 600 }}>
+            Filtros
+          </Typography>
+          <IconButton onClick={() => setMobileFiltersOpen(false)} aria-label="Fechar filtros">
+            <Close />
+          </IconButton>
+        </Stack>
+        <Divider sx={{ mb: 2 }} />
+        {filtersContent}
+      </Drawer>
       </Container>
     </AppLayout>
   );
