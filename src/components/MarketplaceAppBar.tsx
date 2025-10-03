@@ -21,6 +21,7 @@ import {
   PersonOutline,
   Search as SearchIcon,
 } from '@mui/icons-material';
+import Image from 'next/image';
 
 export interface MarketplaceAppBarProps {
   showAuthButtons?: boolean;
@@ -44,30 +45,13 @@ export default function MarketplaceAppBar({
     >
       <Toolbar sx={{ gap: { xs: 2, md: 3 }, py: { xs: 1, md: 1.5 }, flexWrap: 'wrap' }}>
         <Stack direction="row" spacing={1.5} alignItems="center" sx={{ flexShrink: 0 }}>
-          <Box
-            sx={{
-              width: 44,
-              height: 44,
-              borderRadius: 2,
-              bgcolor: 'primary.main',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              color: 'common.white',
-              fontWeight: 700,
-              fontSize: 18,
-            }}
-          >
-            B2
-          </Box>
-          <Stack spacing={0}>
-            <Typography variant="h6" sx={{ fontWeight: 700, lineHeight: 1 }}>
-              B2Blue Marketplace
-            </Typography>
-            <Typography variant="caption" sx={{ color: 'text.secondary' }}>
-              Gestão inteligente de resíduos
-            </Typography>
-          </Stack>
+          <Image
+            src="/assets/b2bluelogo.svg"
+            alt="B2Blue Marketplace"
+            width={120}
+            height={48}
+            priority
+          />
         </Stack>
 
         <IconButton

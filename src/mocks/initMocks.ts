@@ -11,9 +11,15 @@ export async function initMocks(): Promise<void> {
         return;
       }
 
+      try { console.info('[MSW] Starting worker...'); } catch {}
       await worker.start({
-        onUnhandledRequest: 'bypass',
+        onUnhandledRequest: 'warn',
+        serviceWorker: {
+          url: '/mockServiceWorker.js',
+        },
+        quiet: false,
       });
+      try { console.info('[MSW] Worker started and ready.'); } catch {}
     });
   }
 
