@@ -16,7 +16,7 @@ const ColorModeContext = React.createContext<ColorModeContextProps | undefined>(
 
 function getInitialMode(): PaletteMode {
   if (typeof window === 'undefined') return 'light';
-  const stored = window.localStorage.getItem('color-mode');
+  const stored = getStoredPreference();
   if (stored === 'light' || stored === 'dark') return stored;
   try {
     return window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
@@ -25,22 +25,79 @@ function getInitialMode(): PaletteMode {
   }
 }
 
+function getStoredPreference(): 'system' | PaletteMode {
+  if (typeof window === 'undefined') return 'system';
+  try {
+    const stored = window.localStorage.getItem('color-mode');
+    return stored === 'light' || stored === 'dark' ? stored : 'system';
+  } catch {
+    return 'system';
+  }
+}
+
 export default function ColorModeProvider({ children }: { children: React.ReactNode }) {
-  const [mode, setMode] = React.useState<PaletteMode>(getInitialMode);
+  const [mode, setModeState] = React.useState<PaletteMode>(getInitialMode);
+  const [preference, setPreference] = React.useState<'system' | PaletteMode>(getStoredPreference);
+  const [prefersDark, setPrefersDark] = React.useState<boolean>(() => {
+    if (typeof window === 'undefined') return false;
+    try {
+      return window.matchMedia('(prefers-color-scheme: dark)').matches;
+    } catch {
+      return false;
+    }
+  });
 
   React.useEffect(() => {
+    if (typeof window === 'undefined') return;
+    const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
+    const handleChange = (event: MediaQueryListEvent | MediaQueryList) => {
+      setPrefersDark(event.matches);
+    };
+
+    handleChange(mediaQuery);
+
+    if (typeof mediaQuery.addEventListener === 'function') {
+      mediaQuery.addEventListener('change', handleChange);
+      return () => mediaQuery.removeEventListener('change', handleChange);
+    }
+
+    mediaQuery.addListener(handleChange);
+    return () => mediaQuery.removeListener(handleChange);
+  }, []);
+
+  React.useEffect(() => {
+    if (preference === 'system') {
+      setModeState(prefersDark ? 'dark' : 'light');
+    } else {
+      setModeState(preference);
+    }
+  }, [preference, prefersDark]);
+
+  React.useEffect(() => {
+    if (typeof window === 'undefined') return;
     try {
-      window.localStorage.setItem('color-mode', mode);
+      window.localStorage.setItem('color-mode', preference);
     } catch {}
+  }, [preference]);
+
+  const toggleColorMode = React.useCallback(() => {
+    setPreference((prevPreference) => {
+      const base = prevPreference === 'system' ? mode : prevPreference;
+      return base === 'light' ? 'dark' : 'light';
+    });
   }, [mode]);
+
+  const handleSetMode = React.useCallback((nextMode: PaletteMode) => {
+    setPreference(nextMode);
+  }, []);
 
   const value = React.useMemo<ColorModeContextProps>(
     () => ({
       mode,
-      toggleColorMode: () => setMode((prev) => (prev === 'light' ? 'dark' : 'light')),
-      setMode,
+      toggleColorMode,
+      setMode: handleSetMode,
     }),
-    [mode]
+    [handleSetMode, mode, toggleColorMode]
   );
 
   const theme = React.useMemo(() => createAppTheme(mode), [mode]);
