@@ -29,6 +29,7 @@ import { Search, FilterList, LocationOn, ViewModule, ViewList, Close } from '@mu
 import CircularProgress from '@mui/material/CircularProgress';
 import type { Category, Product } from '../../../data/products';
 import ProductCard from '../../../components/ProductCard';
+import ProductListItem from '../../../components/ProductListItem';
 import AppLayout from '../../../components/AppLayout';
 
 interface CategoryPageClientProps {
@@ -53,6 +54,7 @@ export default function CategoryPageClient({ slug }: CategoryPageClientProps) {
   const [filtersOpen, setFiltersOpen] = React.useState(false);
   const theme = useTheme();
   const isMdUp = useMediaQuery(theme.breakpoints.up('md'));
+  const isListView = isMdUp && viewMode === 'list';
 
   React.useEffect(() => {
     let active = true;
@@ -398,22 +400,30 @@ export default function CategoryPageClient({ slug }: CategoryPageClientProps) {
           )}
 
           {sortedProducts.length > 0 ? (
-            <Box
-              sx={{
-                display: 'grid',
-                gridTemplateColumns: {
-                  xs: '1fr',
-                  sm: 'repeat(2, 1fr)',
-                  md: viewMode === 'grid' ? 'repeat(2, 1fr)' : '1fr',
-                  lg: viewMode === 'grid' ? 'repeat(3, 1fr)' : '1fr',
-                },
-                gap: 3,
-              }}
-            >
-              {sortedProducts.map((product) => (
-                <ProductCard key={product.id} product={product} />
-              ))}
-            </Box>
+            isListView ? (
+              <Stack spacing={2.5}>
+                {sortedProducts.map((product) => (
+                  <ProductListItem key={product.id} product={product} />
+                ))}
+              </Stack>
+            ) : (
+              <Box
+                sx={{
+                  display: 'grid',
+                  gridTemplateColumns: {
+                    xs: '1fr',
+                    sm: 'repeat(2, 1fr)',
+                    md: 'repeat(2, 1fr)',
+                    lg: 'repeat(3, 1fr)',
+                  },
+                  gap: 3,
+                }}
+              >
+                {sortedProducts.map((product) => (
+                  <ProductCard key={product.id} product={product} />
+                ))}
+              </Box>
+            )
           ) : (
             <Paper sx={{ p: 4, textAlign: 'center' }}>
               <Typography variant="h6" color="text.secondary" sx={{ mb: 2 }}>
