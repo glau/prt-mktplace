@@ -30,6 +30,38 @@ import SimpleImageGallery from '../../../components/SimpleImageGallery';
 import { fetchProductById, fetchCategoryById } from '../../../lib/api';
 import AppLayout from '../../../components/AppLayout';
 
+function formatCurrency(currency: string, rawValue: string | number): string {
+  const normalizedValue = typeof rawValue === 'number' ? rawValue : Number(rawValue.replace(',', '.'));
+
+  if (!Number.isNaN(normalizedValue) && Number.isFinite(normalizedValue)) {
+    try {
+      return new Intl.NumberFormat('pt-BR', {
+        style: 'currency',
+        currency,
+      }).format(normalizedValue);
+    } catch {
+      // fallback handled below
+    }
+  }
+
+  return `${rawValue} ${currency}`;
+}
+
+function formatDateTime(value: string): string {
+  try {
+    return new Intl.DateTimeFormat('pt-BR', {
+      dateStyle: 'short',
+      timeStyle: 'short',
+    }).format(new Date(value));
+  } catch {
+    try {
+      return new Date(value).toLocaleString('pt-BR');
+    } catch {
+      return value;
+    }
+  }
+}
+
 interface ProductPageClientProps {
   productId: string;
 }
@@ -153,51 +185,170 @@ export default function ProductPageClient({ productId }: ProductPageClientProps)
           gap: 4,
         }}
       >
-        {/* Left Column - Images */}
-        <Box>
-          <SimpleImageGallery images={product.images} title={product.title} />
+        {/* Left Column - Images + Combined details */}
+        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+          {(() => {
+            const gallery = product.adDetails?.media?.gallery_images;
+            const images = Array.isArray(gallery) && gallery.length > 0 ? gallery : product.images;
+            return <SimpleImageGallery images={images} title={product.title} />;
+          })()}
+
+          {/* Combined Description + Ad Details */}
+          <Paper sx={{ p: 0, borderRadius: 2, overflow: 'hidden' }}>
+            {/* Descrição */}
+            <Box sx={{ p: 3 }}>
+              <Typography variant="h6" sx={{ mb: 2 }}>Descrição</Typography>
+              <Typography variant="body1" sx={{ lineHeight: 1.7 }}>
+                {product.adDetails?.description || product.description}
+              </Typography>
+            </Box>
+            {/* Linha full-bleed */}
+            <Divider />
+
+            {/* Detalhes do Anúncio */}
+            {product.adDetails && (
+              <Box sx={{ p: 3 }}>
+                <Typography variant="h6" sx={{ mb: 2 }}>Detalhes do Anúncio</Typography>
+
+                {/* Grupo: Informações */}
+                <Typography variant="subtitle1" sx={{ mt: 1, mb: 1.5, fontWeight: 600 }}>Informações</Typography>
+                <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', sm: '1fr 1fr' }, gap: 2, mb: 2 }}>
+                  <Box>
+                    <Typography variant="subtitle2" color="text.secondary">Categoria</Typography>
+                    <Typography variant="body2">{product.adDetails.category}</Typography>
+                  </Box>
+                  <Box>
+                    <Typography variant="subtitle2" color="text.secondary">Tipo de anúncio</Typography>
+                    <Typography variant="body2">{product.adDetails.ad_type}</Typography>
+                  </Box>
+                  <Box>
+                    <Typography variant="subtitle2" color="text.secondary">Quantidade</Typography>
+                    <Typography variant="body2">
+                      {product.adDetails.quantity.value} {product.adDetails.quantity.unit}
+                      {product.adDetails.quantity.frequency ? ` • ${product.adDetails.quantity.frequency}` : ''}
+                    </Typography>
+                  </Box>
+                  <Box>
+                    <Typography variant="subtitle2" color="text.secondary">Preço</Typography>
+                    <Typography variant="body2">
+                      {formatCurrency(product.adDetails.price.currency, product.adDetails.price.value)}
+                    </Typography>
+                  </Box>
+                </Box>
+                <Divider sx={{ my: 2 }} />
+
+                {/* Grupo: Classificação */}
+                <Typography variant="subtitle1" sx={{ mt: 1, mb: 1.5, fontWeight: 600 }}>Classificação</Typography>
+                <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', sm: '1fr 1fr' }, gap: 2, mb: 2 }}>
+                  <Box>
+                    <Typography variant="subtitle2" color="text.secondary">Origem</Typography>
+                    <Typography variant="body2">{product.adDetails.classification.origin}</Typography>
+                  </Box>
+                  <Box>
+                    <Typography variant="subtitle2" color="text.secondary">Periculosidade</Typography>
+                    <Typography variant="body2">{product.adDetails.classification.hazard_status}</Typography>
+                  </Box>
+                </Box>
+                <Divider sx={{ my: 2 }} />
+
+                {/* Grupo: Logística */}
+                <Typography variant="subtitle1" sx={{ mt: 1, mb: 1.5, fontWeight: 600 }}>Logística</Typography>
+                <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', sm: '1fr 1fr' }, gap: 2, mb: 2 }}>
+                  <Box>
+                    <Typography variant="subtitle2" color="text.secondary">Transporte</Typography>
+                    <Typography variant="body2">
+                      {product.adDetails.logistics.transport_available ? 'Disponível' : 'Não disponível'}
+                    </Typography>
+                  </Box>
+                  <Box>
+                    <Typography variant="subtitle2" color="text.secondary">Detalhes do transporte</Typography>
+                    <Typography variant="body2">{product.adDetails.logistics.transport_details}</Typography>
+                  </Box>
+                  <Box>
+                    <Typography variant="subtitle2" color="text.secondary">Equipamentos</Typography>
+                    <Typography variant="body2">
+                      {product.adDetails.equipment.quantity} × {product.adDetails.equipment.name}
+                    </Typography>
+                  </Box>
+                </Box>
+                <Divider sx={{ my: 2 }} />
+
+                {/* Grupo: Documentos & Datas */}
+                <Typography variant="subtitle1" sx={{ mt: 1, mb: 1.5, fontWeight: 600 }}>Documentos & Datas</Typography>
+                <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', sm: '1fr 1fr' }, gap: 2 }}>
+                  <Box>
+                    <Typography variant="subtitle2" color="text.secondary">Documentos obrigatórios</Typography>
+                    <Typography variant="body2">{product.adDetails.metadata.required_documents ? 'Sim' : 'Não'}</Typography>
+                  </Box>
+                  <Box>
+                    <Typography variant="subtitle2" color="text.secondary">Criado em</Typography>
+                    <Typography variant="body2">{formatDateTime(product.adDetails.metadata.creation_date)}</Typography>
+                  </Box>
+                  <Box>
+                    <Typography variant="subtitle2" color="text.secondary">Último acesso</Typography>
+                    <Typography variant="body2">{formatDateTime(product.adDetails.metadata.last_access_date)}</Typography>
+                  </Box>
+                </Box>
+              </Box>
+            )}
+          </Paper>
         </Box>
 
         {/* Right Column - Product Info */}
         <Box>
-          <Box sx={{ position: 'sticky', top: 20 }}>
-            {/* Title and Actions */}
-            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 2 }}>
-              <Typography variant="h4" component="h1" sx={{ fontWeight: 600, flex: 1, mr: 2 }}>
+          <Box sx={{ position: { xs: 'static', md: 'sticky' }, top: { md: 20 }, display: 'flex', flexDirection: 'column', gap: 2, alignSelf: 'start', height: 'fit-content' }}>
+            {/* Title and quick actions */}
+            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+              <Typography variant="h4" component="h1" sx={{ fontWeight: 700, flex: 1, mr: 2, lineHeight: 1.2 }}>
                 {product.title}
               </Typography>
               <Box>
-                <IconButton onClick={handleFavoriteClick}>
+                <IconButton aria-label="Favoritar" onClick={handleFavoriteClick}>
                   {isFavorite ? <Favorite color="error" /> : <FavoriteBorder />}
                 </IconButton>
-                <IconButton>
+                <IconButton aria-label="Compartilhar">
                   <Share />
                 </IconButton>
               </Box>
             </Box>
 
-            {/* Price */}
-            <Typography variant="h3" color="primary" sx={{ fontWeight: 700, mb: 2 }}>
-              R$ {product.price.toFixed(2).replace('.', ',')}
-            </Typography>
+            {/* Price & actions card */}
+            <Paper sx={{ p: 3, borderRadius: 2, boxShadow: (t) => t.shadows[3] }}>
+              <Typography variant="h3" color="primary" sx={{ fontWeight: 800, mb: 1 }}>
+                {product.adDetails?.price
+                  ? formatCurrency(product.adDetails.price.currency, product.adDetails.price.value)
+                  : `R$ ${product.price.toFixed(2).replace('.', ',')}`}
+              </Typography>
 
-            {/* Location and Date */}
-            <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
-              <LocationOn sx={{ fontSize: 18, color: 'text.secondary', mr: 0.5 }} />
-              <Typography variant="body2" color="text.secondary">
-                {product.location}
-              </Typography>
-            </Box>
-            
-            <Box sx={{ display: 'flex', alignItems: 'center', mb: 3 }}>
-              <Schedule sx={{ fontSize: 18, color: 'text.secondary', mr: 0.5 }} />
-              <Typography variant="body2" color="text.secondary">
-                Publicado em {formatDate(product.createdAt)}
-              </Typography>
-            </Box>
+              <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
+                <LocationOn sx={{ fontSize: 18, color: 'text.secondary', mr: 0.5 }} />
+                <Typography variant="body2" color="text.secondary">
+                  {product.location}
+                </Typography>
+              </Box>
+              <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
+                <Schedule sx={{ fontSize: 18, color: 'text.secondary', mr: 0.5 }} />
+                <Typography variant="body2" color="text.secondary">
+                  Publicado em {formatDate(product.createdAt)}
+                </Typography>
+              </Box>
+
+              <Box
+                sx={{
+                  display: 'grid',
+                  gridTemplateColumns: { xs: '1fr', sm: '1fr 1fr' },
+                  gap: 1,
+                }}
+              >
+                <Button fullWidth variant="contained" startIcon={<Phone />}>
+                  Ligar
+                </Button>
+                <Button fullWidth variant="outlined" startIcon={<Message />}>Mensagem</Button>
+              </Box>
+            </Paper>
 
             {/* Seller Info */}
-            <Paper sx={{ p: 3, mb: 3 }}>
+            <Paper sx={{ p: 3 }}>
               <Typography variant="h6" sx={{ mb: 2 }}>Vendedor</Typography>
               <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
                 <Avatar sx={{ mr: 2, bgcolor: 'primary.main' }}>
@@ -226,84 +377,14 @@ export default function ProductPageClient({ productId }: ProductPageClientProps)
                   </Box>
                 </Box>
               </Box>
-              
-              <Box
-                sx={{
-                  display: 'grid',
-                  gridTemplateColumns: '1fr 1fr',
-                  gap: 1,
-                }}
-              >
-                <Button
-                  fullWidth
-                  variant="contained"
-                  startIcon={<Phone />}
-                  sx={{ mb: 1 }}
-                >
-                  Ligar
-                </Button>
-                <Button
-                  fullWidth
-                  variant="outlined"
-                  startIcon={<Message />}
-                  sx={{ mb: 1 }}
-                >
-                  Mensagem
-                </Button>
-              </Box>
             </Paper>
 
-            {/* Category */}
-            <Box sx={{ mb: 3 }}>
-              <Chip
-                label={category.name}
-                color="primary"
-                variant="outlined"
-                sx={{ mb: 2 }}
-              />
-            </Box>
+            {/* Category chip removed as requested */}
           </Box>
         </Box>
       </Box>
 
-      {/* Description and Specifications */}
-      <Box
-        sx={{
-          display: 'grid',
-          gridTemplateColumns: {
-            xs: '1fr',
-            md: '7fr 5fr',
-          },
-          gap: 4,
-          mt: 2,
-        }}
-      >
-        <Paper sx={{ p: 3 }}>
-          <Typography variant="h6" sx={{ mb: 2 }}>Descrição</Typography>
-          <Typography variant="body1" sx={{ lineHeight: 1.7 }}>
-            {product.description}
-          </Typography>
-        </Paper>
-
-        <Paper sx={{ p: 3 }}>
-          <Typography variant="h6" sx={{ mb: 2 }}>Especificações</Typography>
-          {Object.entries(product.specifications).map(([key, value], index) => (
-            <Box key={key}>
-              <Box sx={{ display: 'flex', justifyContent: 'space-between', py: 1 }}>
-                <Typography variant="body2" color="text.secondary">
-                  {key}:
-                </Typography>
-                <Typography variant="body2" sx={{ fontWeight: 500 }}>
-                  {value}
-                </Typography>
-              </Box>
-              {index < Object.entries(product.specifications).length - 1 && (
-                <Divider />
-              )}
-            </Box>
-          ))}
-        </Paper>
-      </Box>
+      {/* Combined block moved inside left column to keep same width as gallery */}
       </Container>
     </AppLayout>
   );
