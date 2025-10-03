@@ -43,8 +43,29 @@ export default function MarketplaceAppBar({
         borderColor: 'divider',
       }}
     >
-      <Toolbar sx={{ gap: { xs: 2, md: 3 }, py: { xs: 1, md: 1.5 }, flexWrap: 'wrap' }}>
-        <Stack direction="row" spacing={1.5} alignItems="center" sx={{ flexShrink: 0 }}>
+      <Toolbar
+        sx={{
+          gap: { xs: 1.5, md: 3 },
+          py: { xs: 1, md: 1.5 },
+          flexWrap: { xs: 'nowrap', md: 'wrap' },
+          alignItems: 'center',
+        }}
+      >
+        <Stack
+          direction="row"
+          spacing={{ xs: 1, md: 1.5 }}
+          alignItems="center"
+          sx={{ flexShrink: 0, flexGrow: { xs: 1, md: 0 } }}
+        >
+          <IconButton
+            size="large"
+            sx={{ display: { xs: 'inline-flex', md: 'none' } }}
+            color="inherit"
+            onClick={onMenuClick}
+            aria-label="Abrir menu"
+          >
+            <MenuIcon />
+          </IconButton>
           <Image
             src="/assets/b2bluelogo.svg"
             alt="B2Blue Marketplace"
@@ -53,15 +74,6 @@ export default function MarketplaceAppBar({
             priority
           />
         </Stack>
-
-        <IconButton
-          size="large"
-          sx={{ display: { xs: 'inline-flex', md: 'none' }, ml: 'auto' }}
-          color="inherit"
-          onClick={onMenuClick}
-        >
-          <MenuIcon />
-        </IconButton>
 
         <Stack
           direction="row"
@@ -97,16 +109,6 @@ export default function MarketplaceAppBar({
           <IconButton color="inherit" sx={{ display: { xs: 'none', md: 'inline-flex' } }}>
             <SearchIcon />
           </IconButton>
-          <IconButton color="inherit">
-            <Badge color="primary" variant="dot">
-              <FavoriteBorder />
-            </Badge>
-          </IconButton>
-          <IconButton color="inherit">
-            <Badge color="primary" badgeContent={3} sx={{ '& .MuiBadge-badge': { fontSize: 10 } }}>
-              <ShoppingCartOutlined />
-            </Badge>
-          </IconButton>
           {showAuthButtons ? (
             <>
               <Divider orientation="vertical" flexItem sx={{ display: { xs: 'none', md: 'block' }, height: 28 }} />
@@ -123,7 +125,15 @@ export default function MarketplaceAppBar({
               >
                 Entrar
               </Button>
-              <Avatar sx={{ width: 40, height: 40, bgcolor: 'primary.main', display: { xs: 'inline-flex', sm: 'none' } }}>
+              <Avatar
+                sx={{
+                  width: 40,
+                  height: 40,
+                  bgcolor: 'transparent',
+                  color: 'inherit',
+                  display: { xs: 'inline-flex', sm: 'none' },
+                }}
+              >
                 <PersonOutline fontSize="small" />
               </Avatar>
             </>
