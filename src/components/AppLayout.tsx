@@ -121,11 +121,9 @@ export default function AppLayout({
                 component={Link}
                 href={item.href}
                 onClick={handleCloseMobileNav}
-                sx={{ alignItems: 'center', py: 1.5 }}
+                sx={{ alignItems: 'flex-start', py: 1.5 }}
               >
-                <ListItemIcon sx={{ minWidth: 40, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                  {item.icon}
-                </ListItemIcon>
+                <ListItemIcon sx={{ minWidth: 40, mt: 0.5 }}>{item.icon}</ListItemIcon>
                 <ListItemText
                   primary={item.label}
                   secondary={item.description}

@@ -29,11 +29,26 @@ import type { Category, Product } from '../data/products';
 import { fetchCategories, fetchProducts } from '../lib/api';
 import AppLayout from '../components/AppLayout';
 
+type HeroTab = 'comprar' | 'vender';
+
+const HERO_TAB_CONFIG: Record<HeroTab, { placeholder: string; buttonLabel: string }> = {
+  comprar: {
+    placeholder: 'O que você quer encontrar?',
+    buttonLabel: 'Encontrar oportunidades',
+  },
+  vender: {
+    placeholder: 'Qual resíduo você vai ofertar?',
+    buttonLabel: 'Criar meu anúncio',
+  },
+};
+
 export default function Home() {
   const [categories, setCategories] = React.useState<Category[]>([]);
   const [featuredProducts, setFeaturedProducts] = React.useState<Product[]>([]);
   const [loading, setLoading] = React.useState(true);
   const [error, setError] = React.useState<string | null>(null);
+  const [heroTab, setHeroTab] = React.useState<HeroTab>('comprar');
+  const { placeholder: heroPlaceholder, buttonLabel: heroButtonLabel } = HERO_TAB_CONFIG[heroTab];
 
   React.useEffect(() => {
     let active = true;
@@ -125,17 +140,39 @@ export default function Home() {
             <Box
               sx={{
                 maxWidth: 700,
-                textAlign: 'center',
+                textAlign: { xs: 'left', md: 'center' },
               }}
             >
               <Typography
                 variant="h3"
                 component="h1"
-                sx={{ fontWeight: 700, lineHeight: 1.1, mb: 2 }}
+                sx={(theme) => ({
+                  fontWeight: 700,
+                  lineHeight: { xs: 1.25, md: 1.1 },
+                  mb: 2,
+                  fontSize: {
+                    xs: theme.typography.pxToRem(30),
+                    sm: theme.typography.pxToRem(32),
+                    md: theme.typography.pxToRem(32),
+                  },
+                })}
               >
                 Conectamos empresas para transformar resíduos em valor
               </Typography>
-              <Typography variant="h6" sx={{ fontWeight: 400, maxWidth: 520, mb: 3, mx: 'auto' }}>
+              <Typography
+                variant="h6"
+                sx={(theme) => ({
+                  fontWeight: 400,
+                  maxWidth: 520,
+                  mb: 3,
+                  mx: { xs: 0, md: 'auto' },
+                  fontSize: {
+                    xs: theme.typography.pxToRem(16),
+                    sm: theme.typography.pxToRem(18),
+                    md: theme.typography.pxToRem(18),
+                  },
+                })}
+              >
                 Mais de 20 mil negócios já fazem parte do maior ecossistema de valorização de resíduos do Brasil.
               </Typography>
             </Box>
@@ -151,17 +188,17 @@ export default function Home() {
             }}
           >
             <Tabs
-              value={0}
+              value={heroTab}
               textColor="primary"
               indicatorColor="primary"
               variant="scrollable"
               scrollButtons="auto"
+              allowScrollButtonsMobile
               sx={{ mb: 2, '& .MuiTab-root': { textTransform: 'none', fontWeight: 600 } }}
+              onChange={(_, value: HeroTab) => setHeroTab(value)}
             >
-              <Tab label="Comprar resíduos" />
-              <Tab label="Quero vender" disabled />
-              <Tab label="Transporte logístico" disabled />
-              <Tab label="Financiamento" disabled />
+              <Tab value="comprar" label="Quero comprar" />
+              <Tab value="vender" label="Quero vender" />
             </Tabs>
 
             <Stack
@@ -172,7 +209,7 @@ export default function Home() {
               <TextField
                 fullWidth
                 size="medium"
-                placeholder="Buscar material ou localidade"
+                placeholder={heroPlaceholder}
                 slotProps={{
                   input: {
                     startAdornment: (
@@ -192,9 +229,10 @@ export default function Home() {
                   borderRadius: 999,
                   fontWeight: 600,
                   textTransform: 'none',
+                  whiteSpace: 'nowrap',
                 }}
               >
-                Ver ofertas
+                {heroButtonLabel}
               </Button>
             </Stack>
           </Paper>
