@@ -1,6 +1,7 @@
 'use client';
 import React from 'react';
 import { Box, Paper, IconButton } from '@mui/material';
+import { alpha } from '@mui/material/styles';
 import { ChevronLeft, ChevronRight } from '@mui/icons-material';
 import Image from 'next/image';
 
@@ -44,32 +45,34 @@ export default function SimpleImageGallery({ images, title }: SimpleImageGallery
         {images.length > 1 && (
           <>
             <IconButton
-              sx={{
+              sx={(theme) => ({
                 position: 'absolute',
                 left: 8,
                 top: '50%',
                 transform: 'translateY(-50%)',
-                backgroundColor: 'rgba(255, 255, 255, 0.9)',
+                backgroundColor: alpha(theme.palette.background.paper, 0.9),
+                color: theme.palette.text.primary,
                 '&:hover': {
-                  backgroundColor: 'rgba(255, 255, 255, 1)',
+                  backgroundColor: alpha(theme.palette.background.paper, 1),
                 },
-              }}
+              })}
               onClick={handlePrevious}
             >
               <ChevronLeft />
             </IconButton>
             
             <IconButton
-              sx={{
+              sx={(theme) => ({
                 position: 'absolute',
                 right: 8,
                 top: '50%',
                 transform: 'translateY(-50%)',
-                backgroundColor: 'rgba(255, 255, 255, 0.9)',
+                backgroundColor: alpha(theme.palette.background.paper, 0.9),
+                color: theme.palette.text.primary,
                 '&:hover': {
-                  backgroundColor: 'rgba(255, 255, 255, 1)',
+                  backgroundColor: alpha(theme.palette.background.paper, 1),
                 },
-              }}
+              })}
               onClick={handleNext}
             >
               <ChevronRight />

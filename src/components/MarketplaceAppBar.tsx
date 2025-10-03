@@ -20,7 +20,10 @@ import {
   ShoppingCartOutlined,
   PersonOutline,
   Search as SearchIcon,
+  DarkMode,
+  LightMode,
 } from '@mui/icons-material';
+import { useColorMode } from '../app/providers/ColorModeProvider';
 import Image from 'next/image';
 
 export interface MarketplaceAppBarProps {
@@ -32,6 +35,7 @@ export default function MarketplaceAppBar({
   showAuthButtons = true,
   onMenuClick,
 }: MarketplaceAppBarProps) {
+  const { mode, toggleColorMode } = useColorMode();
   return (
     <AppBar
       position="sticky"
@@ -106,6 +110,9 @@ export default function MarketplaceAppBar({
         </Stack>
 
         <Stack direction="row" spacing={1.5} alignItems="center" sx={{ flexShrink: 0 }}>
+          <IconButton color="inherit" onClick={toggleColorMode} aria-label="Alternar tema">
+            {mode === 'dark' ? <LightMode /> : <DarkMode />}
+          </IconButton>
           <IconButton color="inherit" sx={{ display: { xs: 'none', md: 'inline-flex' } }}>
             <SearchIcon />
           </IconButton>

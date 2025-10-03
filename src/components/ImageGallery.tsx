@@ -15,6 +15,7 @@ import {
   Close,
   ZoomIn,
 } from '@mui/icons-material';
+import { alpha } from '@mui/material/styles';
 import Image from 'next/image';
 
 interface ImageGalleryProps {
@@ -69,32 +70,34 @@ export default function ImageGallery({ images, title }: ImageGalleryProps) {
           {images.length > 1 && (
             <>
               <IconButton
-                sx={{
+                sx={(theme) => ({
                   position: 'absolute',
                   left: 8,
                   top: '50%',
                   transform: 'translateY(-50%)',
-                  backgroundColor: 'rgba(255, 255, 255, 0.9)',
+                  backgroundColor: alpha(theme.palette.background.paper, 0.9),
+                  color: theme.palette.text.primary,
                   '&:hover': {
-                    backgroundColor: 'rgba(255, 255, 255, 1)',
+                    backgroundColor: alpha(theme.palette.background.paper, 1),
                   },
-                }}
+                })}
                 onClick={handlePrevious}
               >
                 <ChevronLeft />
               </IconButton>
               
               <IconButton
-                sx={{
+                sx={(theme) => ({
                   position: 'absolute',
                   right: 8,
                   top: '50%',
                   transform: 'translateY(-50%)',
-                  backgroundColor: 'rgba(255, 255, 255, 0.9)',
+                  backgroundColor: alpha(theme.palette.background.paper, 0.9),
+                  color: theme.palette.text.primary,
                   '&:hover': {
-                    backgroundColor: 'rgba(255, 255, 255, 1)',
+                    backgroundColor: alpha(theme.palette.background.paper, 1),
                   },
-                }}
+                })}
                 onClick={handleNext}
               >
                 <ChevronRight />
@@ -104,15 +107,16 @@ export default function ImageGallery({ images, title }: ImageGalleryProps) {
 
           {/* Zoom Button */}
           <IconButton
-            sx={{
+            sx={(theme) => ({
               position: 'absolute',
               top: 8,
               right: 8,
-              backgroundColor: 'rgba(255, 255, 255, 0.9)',
+              backgroundColor: alpha(theme.palette.background.paper, 0.9),
+              color: theme.palette.text.primary,
               '&:hover': {
-                backgroundColor: 'rgba(255, 255, 255, 1)',
+                backgroundColor: alpha(theme.palette.background.paper, 1),
               },
-            }}
+            })}
             onClick={handleZoomClick}
           >
             <ZoomIn />

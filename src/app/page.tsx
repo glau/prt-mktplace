@@ -18,6 +18,7 @@ import {
   TextField,
   InputAdornment,
 } from '@mui/material';
+import { alpha } from '@mui/material/styles';
 import {
   Category as CategoryIcon,
   TrendingUp,
@@ -180,12 +181,12 @@ export default function Home() {
 
           <Paper
             elevation={6}
-            sx={{
-              bgcolor: 'rgba(255,255,255,0.96)',
+            sx={(theme) => ({
+              bgcolor: alpha(theme.palette.background.paper, 0.96),
               borderRadius: 4,
               px: { xs: 2, sm: 4 },
               py: { xs: 2.5, sm: 3 },
-            }}
+            })}
           >
             <Tabs
               value={heroTab}

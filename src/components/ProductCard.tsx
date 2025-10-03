@@ -9,6 +9,7 @@ import {
   IconButton,
   Rating,
 } from '@mui/material';
+import { alpha } from '@mui/material/styles';
 import {
   Favorite,
   FavoriteBorder,
@@ -55,15 +56,16 @@ export default function ProductCard({ product }: ProductCardProps) {
             sx={{ objectFit: 'cover' }}
           />
           <IconButton
-            sx={{
+            sx={(theme) => ({
               position: 'absolute',
               top: 8,
               right: 8,
-              backgroundColor: 'rgba(255, 255, 255, 0.9)',
+              backgroundColor: alpha(theme.palette.background.paper, 0.9),
+              color: theme.palette.text.primary,
               '&:hover': {
-                backgroundColor: 'rgba(255, 255, 255, 1)',
+                backgroundColor: alpha(theme.palette.background.paper, 1),
               },
-            }}
+            })}
             onClick={handleFavoriteClick}
           >
             {isFavorite ? (

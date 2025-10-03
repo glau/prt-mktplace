@@ -1,8 +1,6 @@
 import type { Metadata } from "next";
 import { AppRouterCacheProvider } from '@mui/material-nextjs/v15-appRouter';
-import { ThemeProvider } from '@mui/material/styles';
-import CssBaseline from '@mui/material/CssBaseline';
-import theme from '../theme';
+import ColorModeProvider from './providers/ColorModeProvider';
 import MswProvider from './providers/MswProvider';
 import "./globals.css";
 
@@ -20,10 +18,9 @@ export default function RootLayout({
     <html lang="pt-BR">
       <body>
         <AppRouterCacheProvider>
-          <ThemeProvider theme={theme}>
-            <CssBaseline />
+          <ColorModeProvider>
             <MswProvider>{children}</MswProvider>
-          </ThemeProvider>
+          </ColorModeProvider>
         </AppRouterCacheProvider>
       </body>
     </html>

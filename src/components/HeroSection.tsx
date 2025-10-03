@@ -14,6 +14,7 @@ import {
   Typography,
 } from '@mui/material';
 import { Search as SearchIcon } from '@mui/icons-material';
+import { alpha } from '@mui/material/styles';
 
 type HeroTab = 'comprar' | 'vender';
 
@@ -101,12 +102,12 @@ export default function HeroSection() {
 
         <Paper
           elevation={6}
-          sx={{
-            bgcolor: 'rgba(255,255,255,0.96)',
+          sx={(theme) => ({
+            bgcolor: alpha(theme.palette.background.paper, 0.96),
             borderRadius: 4,
             px: { xs: 2, sm: 4 },
             py: { xs: 2.5, sm: 3 },
-          }}
+          })}
         >
           <Tabs
             value={currentTab}
