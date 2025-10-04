@@ -79,7 +79,7 @@ export default function HeroSection() {
                 },
               })}
             >
-              Conectamos milhares de empresas para negociar seus resíduos de forma eficiente
+              Conectamos milhares de empresas para negociar seus resíduos
             </Typography>
             <Typography
               variant="h6"
