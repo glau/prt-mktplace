@@ -1,55 +1,52 @@
 import { http, HttpResponse } from 'msw';
 import { categories, products } from '../data/products';
 
-function pathnameOf(request: Request): string {
-  try {
-    return new URL(request.url).pathname;
-  } catch {
-    return '';
-  }
-}
-
 export const handlers = [
-  http.get(/\/api\/categories$/i, () => {
-    try { console.info('[MSW] GET /api/categories'); } catch {}
+  // Handles GET /api/categories
+  http.get('/api/categories', () => {
+    console.info('[MSW] GET /api/categories');
     return HttpResponse.json({ categories });
   }),
 
-  http.get(/\/api\/categories\/([^/]+)$/i, ({ request }) => {
-    const pathname = pathnameOf(request);
-    const match = pathname.match(/\/api\/categories\/([^/]+)$/i);
-    const id = match?.[1];
+  // Handles GET /api/categories/:id
+  http.get('/api/categories/:id', ({ params }) => {
+    const { id } = params;
     const category = categories.find((item) => item.id === id);
 
+    console.info(`[MSW] GET /api/categories/${id}`);
+
     if (!category) {
-      return HttpResponse.json({ message: 'Categoria não encontrada' }, { status: 404 });
+      return new HttpResponse(null, { status: 404, statusText: 'Categoria não encontrada' });
     }
 
     return HttpResponse.json({ category });
   }),
 
-  http.get(/\/api\/products(?:\?.*)?$/i, ({ request }) => {
+  // Handles GET /api/products (optional ?category=...)
+  http.get('/api/products', ({ request }) => {
     const url = new URL(request.url);
     const categoryId = url.searchParams.get('category');
+
+    console.info(`[MSW] GET /api/products (category=${categoryId ?? 'all'})`);
+
     const filteredProducts = categoryId
       ? products.filter((product) => product.category === categoryId)
       : products;
 
-    try { console.info(`[MSW] GET /api/products (category=${categoryId ?? 'all'})`); } catch {}
     return HttpResponse.json({ products: filteredProducts });
   }),
 
-  http.get(/\/api\/products\/([^/]+)$/i, ({ request }) => {
-    const pathname = pathnameOf(request);
-    const match = pathname.match(/\/api\/products\/([^/]+)$/i);
-    const id = match?.[1];
+  // Handles GET /api/products/:id
+  http.get('/api/products/:id', ({ params }) => {
+    const { id } = params;
     const product = products.find((item) => item.id === id);
 
+    console.info(`[MSW] GET /api/products/${id}`);
+
     if (!product) {
-      return HttpResponse.json({ message: 'Produto não encontrado' }, { status: 404 });
+      return new HttpResponse(null, { status: 404, statusText: 'Produto não encontrado' });
     }
 
     return HttpResponse.json({ product });
   }),
 ];
-
