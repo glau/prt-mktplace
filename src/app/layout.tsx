@@ -1,3 +1,4 @@
+import React from 'react';
 import type { Metadata } from "next";
 import { AppRouterCacheProvider } from '@mui/material-nextjs/v15-appRouter';
 import ColorModeProvider from './providers/ColorModeProvider';

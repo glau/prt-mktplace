@@ -1,5 +1,6 @@
 import React from 'react';
-import { render, screen, waitFor } from '@testing-library/react';
+import { render, screen } from '@testing-library/react';
+import type { Product, Category } from '../../data/products';
 
 vi.mock('../../app/providers/ColorModeProvider', () => ({
   useColorMode: () => ({ mode: 'light', toggleColorMode: vi.fn() }),
@@ -8,7 +9,6 @@ vi.mock('../../app/providers/ColorModeProvider', () => ({
 vi.mock('../../components/AppLayout', () => ({
   default: ({ children }: { children: React.ReactNode }) => <div>{children}</div>,
 }));
-import type { Product, Category } from '../../data/products';
 
 // Helper to stub fetch
 let fetchMock: ((url: string | Request | URL, init?: RequestInit) => Promise<Response>) & { mockImplementation: any };
