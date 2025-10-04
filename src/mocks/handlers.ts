@@ -3,13 +3,13 @@ import { categories, products } from '../data/products';
 
 export const handlers = [
   // Handles GET /api/categories
-  http.get('/api/categories', () => {
+  http.get('*/api/categories', () => {
     console.info('[MSW] GET /api/categories');
     return HttpResponse.json({ categories });
   }),
 
   // Handles GET /api/categories/:id
-  http.get('/api/categories/:id', ({ params }) => {
+  http.get('*/api/categories/:id', ({ params }) => {
     const { id } = params;
     const category = categories.find((item) => item.id === id);
 
@@ -23,7 +23,7 @@ export const handlers = [
   }),
 
   // Handles GET /api/products (optional ?category=...)
-  http.get('/api/products', ({ request }) => {
+  http.get('*/api/products', ({ request }) => {
     const url = new URL(request.url);
     const categoryId = url.searchParams.get('category');
 
@@ -37,7 +37,7 @@ export const handlers = [
   }),
 
   // Handles GET /api/products/:id
-  http.get('/api/products/:id', ({ params }) => {
+  http.get('*/api/products/:id', ({ params }) => {
     const { id } = params;
     const product = products.find((item) => item.id === id);
 
