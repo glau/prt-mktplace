@@ -1,4 +1,21 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# B2Blue Marketplace - Protótipo
+
+Protótipo do marketplace B2Blue usando Next.js 15 e Material UI 7 para gestão de resíduos industriais.
+
+## 🚀 Tecnologias
+
+- **Next.js 15** - App Router com React 19
+- **Material UI 7** - Design system moderno
+- **TypeScript** - Type safety completo
+- **Vitest + Testing Library** - Testes unitários e de integração
+- **MSW (Mock Service Worker)** - API mockada para demos
+
+## 📊 Estatísticas do Projeto
+
+- ✅ **39 testes** com 100% de aprovação
+- ✅ **~800 linhas** de código duplicado eliminadas
+- ✅ **6 hooks/utilitários** reutilizáveis criados
+- ✅ **Performance otimizada** com memoização estratégica
 
 ## Getting Started
 
@@ -88,3 +105,60 @@ Steps to enable Codecov (optional):
 3. Push a commit or open a PR; the workflow will publish coverage to Codecov
 
 Local HTML report is available after `npm run test:coverage` at `coverage/index.html`.
+
+## 🔄 Refatorações e Otimizações
+
+Este projeto passou por uma refatoração completa para eliminar código duplicado e melhorar performance. Veja o documento completo em:
+
+📄 **[docs/REFACTORING_SUMMARY.md](docs/REFACTORING_SUMMARY.md)**
+
+### Principais Melhorias:
+
+#### 1. Componentes Unificados
+- **ImageGallery**: Unificação de 2 componentes em 1 com props opcionais
+- **ProductFilters**: Eliminação de duplicação desktop/mobile
+
+#### 2. Hooks Customizados
+- `useFavorites` - Gerenciamento de favoritos com localStorage
+- `useAsyncOperation` - Padrão para operações assíncronas
+
+#### 3. Utilitários Padronizados
+- `formatters.ts` - Formatação de moeda, data, quantidade
+- `commonStyles.ts` - Styles compartilhados (ellipsis, hover, grids)
+
+#### 4. Cobertura de Testes
+```bash
+npm test                 # Todos os testes (39 ✅)
+npm run test:coverage   # Com relatório de cobertura
+```
+
+### Arquitetura
+
+```
+src/
+├── components/          # Componentes React otimizados
+├── hooks/              # Hooks customizados reutilizáveis
+│   ├── useFavorites.ts
+│   └── useAsyncOperation.ts
+├── utils/              # Utilitários e helpers
+│   └── formatters.ts
+├── styles/             # Styles compartilhados
+│   └── commonStyles.ts
+├── mocks/              # MSW handlers para API mockada
+└── __tests__/          # Testes unitários e integração
+```
+
+## 🎨 Componentes Principais
+
+- **ProductCard** - Card de produto com favoritos
+- **ProductListItem** - Item de lista em modo lista
+- **ImageGallery** - Galeria com zoom e navegação
+- **ProductFilters** - Filtros reutilizáveis
+- **HeroSection** - Banner da home
+
+## 📱 Páginas
+
+- `/` - Home com categorias e produtos em destaque
+- `/categoria/[slug]` - Listagem de produtos por categoria
+- `/produto/[id]` - Detalhes do produto
+- `/categorias` - Lista de todas as categorias

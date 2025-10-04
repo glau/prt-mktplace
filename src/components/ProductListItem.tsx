@@ -6,19 +6,16 @@ import { Box, Paper, Typography, Stack, Rating, IconButton } from '@mui/material
 import { LocationOn, Verified, Favorite, FavoriteBorder } from '@mui/icons-material';
 import { alpha } from '@mui/material/styles';
 import type { Product } from '../data/products';
+import { useFavorites } from '../hooks/useFavorites';
+import { formatPrice } from '../utils/formatters';
+import { textEllipsisStyles } from '../styles/commonStyles';
 
 interface ProductListItemProps {
   product: Product;
 }
 
 export default function ProductListItem({ product }: ProductListItemProps) {
-  const [isFavorite, setIsFavorite] = React.useState(false);
-
-  const handleFavoriteClick = (event: React.MouseEvent) => {
-    event.preventDefault();
-    event.stopPropagation();
-    setIsFavorite((prev) => !prev);
-  };
+  const { isFavorite, toggleFavorite } = useFavorites({ productId: product.id });
 
   return (
     <Link href={`/produto/${product.id}`} style={{ textDecoration: 'none' }}>
@@ -60,7 +57,7 @@ export default function ProductListItem({ product }: ProductListItemProps) {
           />
           <IconButton
             size="small"
-            onClick={handleFavoriteClick}
+            onClick={toggleFavorite}
             sx={(theme) => ({
               position: 'absolute',
               top: 12,
@@ -84,10 +81,7 @@ export default function ProductListItem({ product }: ProductListItemProps) {
               sx={{
                 fontWeight: 600,
                 lineHeight: 1.3,
-                display: '-webkit-box',
-                WebkitLineClamp: 2,
-                WebkitBoxOrient: 'vertical',
-                overflow: 'hidden',
+                ...textEllipsisStyles(2),
               }}
             >
               {product.title}
@@ -98,7 +92,7 @@ export default function ProductListItem({ product }: ProductListItemProps) {
           </Stack>
 
           <Typography variant="h5" color="primary" sx={{ fontWeight: 700 }}>
-            R$ {product.price.toFixed(2).replace('.', ',')}
+            {formatPrice(product.price)}
           </Typography>
 
           <Stack direction="row" alignItems="center" spacing={1}>
@@ -112,10 +106,7 @@ export default function ProductListItem({ product }: ProductListItemProps) {
             variant="body2"
             color="text.secondary"
             sx={{
-              display: '-webkit-box',
-              WebkitLineClamp: 3,
-              WebkitBoxOrient: 'vertical',
-              overflow: 'hidden',
+              ...textEllipsisStyles(3),
             }}
           >
             {product.description}

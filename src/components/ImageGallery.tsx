@@ -21,29 +21,65 @@ import Image from 'next/image';
 interface ImageGalleryProps {
   images: string[];
   title: string;
+  showZoom?: boolean;
+  showThumbnails?: boolean;
+  showCounter?: boolean;
 }
 
-export default function ImageGallery({ images, title }: ImageGalleryProps) {
+const navigationButtonStyles = (theme: any) => ({
+  position: 'absolute',
+  top: '50%',
+  transform: 'translateY(-50%)',
+  backgroundColor: alpha(theme.palette.background.paper, 0.9),
+  color: theme.palette.text.primary,
+  '&:hover': {
+    backgroundColor: alpha(theme.palette.background.paper, 1),
+  },
+});
+
+const scrollbarStyles = {
+  '&::-webkit-scrollbar': { height: 6 },
+  '&::-webkit-scrollbar-track': {
+    backgroundColor: 'rgba(0,0,0,0.1)',
+    borderRadius: 3,
+  },
+  '&::-webkit-scrollbar-thumb': {
+    backgroundColor: 'rgba(0,0,0,0.3)',
+    borderRadius: 3,
+  },
+};
+
+export default function ImageGallery({ 
+  images, 
+  title, 
+  showZoom = true,
+  showThumbnails = true,
+  showCounter = true
+}: ImageGalleryProps) {
   const [selectedImage, setSelectedImage] = React.useState(0);
   const [dialogOpen, setDialogOpen] = React.useState(false);
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
 
-  const handlePrevious = () => {
+  const handlePrevious = React.useCallback(() => {
     setSelectedImage((prev) => (prev === 0 ? images.length - 1 : prev - 1));
-  };
+  }, [images.length]);
 
-  const handleNext = () => {
+  const handleNext = React.useCallback(() => {
     setSelectedImage((prev) => (prev === images.length - 1 ? 0 : prev + 1));
-  };
+  }, [images.length]);
 
-  const handleImageClick = (index: number) => {
+  const handleImageClick = React.useCallback((index: number) => {
     setSelectedImage(index);
-  };
+  }, []);
 
-  const handleZoomClick = () => {
+  const handleZoomClick = React.useCallback(() => {
     setDialogOpen(true);
-  };
+  }, []);
+
+  const handleCloseDialog = React.useCallback(() => {
+    setDialogOpen(false);
+  }, []);
 
   return (
     <>
@@ -70,35 +106,17 @@ export default function ImageGallery({ images, title }: ImageGalleryProps) {
           {images.length > 1 && (
             <>
               <IconButton
-                sx={(theme) => ({
-                  position: 'absolute',
-                  left: 8,
-                  top: '50%',
-                  transform: 'translateY(-50%)',
-                  backgroundColor: alpha(theme.palette.background.paper, 0.9),
-                  color: theme.palette.text.primary,
-                  '&:hover': {
-                    backgroundColor: alpha(theme.palette.background.paper, 1),
-                  },
-                })}
+                sx={{ ...navigationButtonStyles(theme), left: 8 }}
                 onClick={handlePrevious}
+                aria-label="Imagem anterior"
               >
                 <ChevronLeft />
               </IconButton>
               
               <IconButton
-                sx={(theme) => ({
-                  position: 'absolute',
-                  right: 8,
-                  top: '50%',
-                  transform: 'translateY(-50%)',
-                  backgroundColor: alpha(theme.palette.background.paper, 0.9),
-                  color: theme.palette.text.primary,
-                  '&:hover': {
-                    backgroundColor: alpha(theme.palette.background.paper, 1),
-                  },
-                })}
+                sx={{ ...navigationButtonStyles(theme), right: 8 }}
                 onClick={handleNext}
+                aria-label="Próxima imagem"
               >
                 <ChevronRight />
               </IconButton>
@@ -106,24 +124,27 @@ export default function ImageGallery({ images, title }: ImageGalleryProps) {
           )}
 
           {/* Zoom Button */}
-          <IconButton
-            sx={(theme) => ({
-              position: 'absolute',
-              top: 8,
-              right: 8,
-              backgroundColor: alpha(theme.palette.background.paper, 0.9),
-              color: theme.palette.text.primary,
-              '&:hover': {
-                backgroundColor: alpha(theme.palette.background.paper, 1),
-              },
-            })}
-            onClick={handleZoomClick}
-          >
-            <ZoomIn />
-          </IconButton>
+          {showZoom && (
+            <IconButton
+              sx={(theme) => ({
+                position: 'absolute',
+                top: 8,
+                right: 8,
+                backgroundColor: alpha(theme.palette.background.paper, 0.9),
+                color: theme.palette.text.primary,
+                '&:hover': {
+                  backgroundColor: alpha(theme.palette.background.paper, 1),
+                },
+              })}
+              onClick={handleZoomClick}
+              aria-label="Ampliar imagem"
+            >
+              <ZoomIn />
+            </IconButton>
+          )}
 
           {/* Image Counter */}
-          {images.length > 1 && (
+          {showCounter && images.length > 1 && (
             <Box
               sx={{
                 position: 'absolute',
@@ -143,24 +164,14 @@ export default function ImageGallery({ images, title }: ImageGalleryProps) {
         </Paper>
 
         {/* Thumbnail Strip */}
-        {images.length > 1 && (
+        {showThumbnails && images.length > 1 && (
           <Box
             sx={{
               display: 'flex',
               gap: 1,
               overflowX: 'auto',
               pb: 1,
-              '&::-webkit-scrollbar': {
-                height: 6,
-              },
-              '&::-webkit-scrollbar-track': {
-                backgroundColor: 'rgba(0,0,0,0.1)',
-                borderRadius: 3,
-              },
-              '&::-webkit-scrollbar-thumb': {
-                backgroundColor: 'rgba(0,0,0,0.3)',
-                borderRadius: 3,
-              },
+              ...scrollbarStyles,
             }}
           >
             {images.map((image, index) => (
@@ -177,9 +188,7 @@ export default function ImageGallery({ images, title }: ImageGalleryProps) {
                   borderRadius: 1,
                   opacity: selectedImage === index ? 1 : 0.7,
                   transition: 'all 0.2s',
-                  '&:hover': {
-                    opacity: 1,
-                  },
+                  '&:hover': { opacity: 1 },
                 }}
                 onClick={() => handleImageClick(index)}
               >
@@ -196,97 +205,102 @@ export default function ImageGallery({ images, title }: ImageGalleryProps) {
       </Box>
 
       {/* Full Screen Dialog */}
-      <Dialog
-        open={dialogOpen}
-        onClose={() => setDialogOpen(false)}
-        maxWidth={false}
-        fullScreen={isMobile}
-        PaperProps={{
-          sx: {
-            backgroundColor: 'rgba(0, 0, 0, 0.9)',
-            maxWidth: '90vw',
-            maxHeight: '90vh',
-          },
-        }}
-      >
-        <DialogContent
-          sx={{
-            p: 0,
-            position: 'relative',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
+      {showZoom && (
+        <Dialog
+          open={dialogOpen}
+          onClose={handleCloseDialog}
+          maxWidth={false}
+          fullScreen={isMobile}
+          PaperProps={{
+            sx: {
+              backgroundColor: 'rgba(0, 0, 0, 0.9)',
+              maxWidth: '90vw',
+              maxHeight: '90vh',
+            },
           }}
         >
-          <IconButton
+          <DialogContent
             sx={{
-              position: 'absolute',
-              top: 8,
-              right: 8,
-              color: 'white',
-              zIndex: 1,
-            }}
-            onClick={() => setDialogOpen(false)}
-          >
-            <Close />
-          </IconButton>
-
-          <Box
-            sx={{
+              p: 0,
               position: 'relative',
-              width: '100%',
-              height: '80vh',
-              maxWidth: '80vw',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
             }}
           >
-            <Image
-              src={images[selectedImage]}
-              alt={`${title} - Imagem ampliada ${selectedImage + 1}`}
-              fill
-              style={{ objectFit: 'contain' }}
-            />
-          </Box>
+            <IconButton
+              sx={{
+                position: 'absolute',
+                top: 8,
+                right: 8,
+                color: 'white',
+                zIndex: 1,
+              }}
+              onClick={handleCloseDialog}
+              aria-label="Fechar"
+            >
+              <Close />
+            </IconButton>
 
-          {/* Dialog Navigation */}
-          {images.length > 1 && (
-            <>
-              <IconButton
-                sx={{
-                  position: 'absolute',
-                  left: 16,
-                  top: '50%',
-                  transform: 'translateY(-50%)',
-                  color: 'white',
-                  backgroundColor: 'rgba(255, 255, 255, 0.1)',
-                  '&:hover': {
-                    backgroundColor: 'rgba(255, 255, 255, 0.2)',
-                  },
-                }}
-                onClick={handlePrevious}
-              >
-                <ChevronLeft />
-              </IconButton>
-              
-              <IconButton
-                sx={{
-                  position: 'absolute',
-                  right: 16,
-                  top: '50%',
-                  transform: 'translateY(-50%)',
-                  color: 'white',
-                  backgroundColor: 'rgba(255, 255, 255, 0.1)',
-                  '&:hover': {
-                    backgroundColor: 'rgba(255, 255, 255, 0.2)',
-                  },
-                }}
-                onClick={handleNext}
-              >
-                <ChevronRight />
-              </IconButton>
-            </>
-          )}
-        </DialogContent>
-      </Dialog>
+            <Box
+              sx={{
+                position: 'relative',
+                width: '100%',
+                height: '80vh',
+                maxWidth: '80vw',
+              }}
+            >
+              <Image
+                src={images[selectedImage]}
+                alt={`${title} - Imagem ampliada ${selectedImage + 1}`}
+                fill
+                style={{ objectFit: 'contain' }}
+              />
+            </Box>
+
+            {/* Dialog Navigation */}
+            {images.length > 1 && (
+              <>
+                <IconButton
+                  sx={{
+                    position: 'absolute',
+                    left: 16,
+                    top: '50%',
+                    transform: 'translateY(-50%)',
+                    color: 'white',
+                    backgroundColor: 'rgba(255, 255, 255, 0.1)',
+                    '&:hover': {
+                      backgroundColor: 'rgba(255, 255, 255, 0.2)',
+                    },
+                  }}
+                  onClick={handlePrevious}
+                  aria-label="Imagem anterior"
+                >
+                  <ChevronLeft />
+                </IconButton>
+                
+                <IconButton
+                  sx={{
+                    position: 'absolute',
+                    right: 16,
+                    top: '50%',
+                    transform: 'translateY(-50%)',
+                    color: 'white',
+                    backgroundColor: 'rgba(255, 255, 255, 0.1)',
+                    '&:hover': {
+                      backgroundColor: 'rgba(255, 255, 255, 0.2)',
+                    },
+                  }}
+                  onClick={handleNext}
+                  aria-label="Próxima imagem"
+                >
+                  <ChevronRight />
+                </IconButton>
+              </>
+            )}
+          </DialogContent>
+        </Dialog>
+      )}
     </>
   );
 }

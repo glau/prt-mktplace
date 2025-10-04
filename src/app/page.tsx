@@ -25,6 +25,7 @@ import type { Category, Product } from '../data/products';
 import { fetchCategories, fetchProducts } from '../lib/api';
 import AppLayout from '../components/AppLayout';
 import HeroSection from '../components/HeroSection';
+import { cardHoverStyle, responsiveGrid } from '../styles/commonStyles';
 
 export default function Home() {
   const [categories, setCategories] = React.useState<Category[]>([]);
@@ -117,12 +118,7 @@ export default function Home() {
           <Box
             sx={{
               display: 'grid',
-              gridTemplateColumns: {
-                xs: 'repeat(2, 1fr)',
-                sm: 'repeat(3, 1fr)',
-                md: 'repeat(4, 1fr)',
-                lg: 'repeat(6, 1fr)',
-              },
+              gridTemplateColumns: responsiveGrid.categories,
               gap: 3,
             }}
           >
@@ -131,11 +127,7 @@ export default function Home() {
                 <Card
                   sx={{
                     height: '100%',
-                    transition: 'transform 0.2s, box-shadow 0.2s',
-                    '&:hover': {
-                      transform: 'translateY(-2px)',
-                      boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
-                    },
+                    ...cardHoverStyle,
                   }}
                 >
                   <CardActionArea sx={{ p: 2, textAlign: 'center' }}>
@@ -169,12 +161,7 @@ export default function Home() {
           <Box
             sx={{
               display: 'grid',
-              gridTemplateColumns: {
-                xs: '1fr',
-                sm: 'repeat(2, 1fr)',
-                md: 'repeat(3, 1fr)',
-                lg: 'repeat(4, 1fr)',
-              },
+              gridTemplateColumns: responsiveGrid.products,
               gap: 3,
             }}
           >

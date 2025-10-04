@@ -31,6 +31,8 @@ import type { Category, Product } from '../../../data/products';
 import ProductCard from '../../../components/ProductCard';
 import ProductListItem from '../../../components/ProductListItem';
 import AppLayout from '../../../components/AppLayout';
+import ProductFilters, { FilterState } from '../../../components/ProductFilters';
+import { responsiveGrid } from '../../../styles/commonStyles';
 
 interface CategoryPageClientProps {
   slug: string;
@@ -43,11 +45,13 @@ export default function CategoryPageClient({ slug }: CategoryPageClientProps) {
   const [category, setCategory] = React.useState<Category | null>(null);
   const [products, setProducts] = React.useState<Product[]>([]);
   const [priceBounds, setPriceBounds] = React.useState<[number, number]>([0, 0]);
-  const [priceRange, setPriceRange] = React.useState<[number, number]>([0, 0]);
+  const [filters, setFilters] = React.useState<FilterState>({
+    searchTerm: '',
+    locationFilter: '',
+    priceRange: [0, 0],
+    selectedConditions: [],
+  });
   const [sortBy, setSortBy] = React.useState('recent');
-  const [searchTerm, setSearchTerm] = React.useState('');
-  const [locationFilter, setLocationFilter] = React.useState('');
-  const [selectedConditions, setSelectedConditions] = React.useState<string[]>([]);
   const [viewMode, setViewMode] = React.useState<'grid' | 'list'>('grid');
   const [loading, setLoading] = React.useState(true);
   const [error, setError] = React.useState<string | null>(null);
@@ -92,15 +96,14 @@ export default function CategoryPageClient({ slug }: CategoryPageClientProps) {
           : 0;
 
         setPriceBounds([0, max]);
-        setPriceRange([0, max || 0]);
-        setSelectedConditions([]);
+        setFilters(prev => ({ ...prev, priceRange: [0, max || 0] }));
       } catch (loadError) {
         console.error(loadError);
         setError('Não foi possível carregar os dados da categoria.');
         setCategory(null);
         setProducts([]);
         setPriceBounds([0, 0]);
-        setPriceRange([0, 0]);
+        setFilters(prev => ({ ...prev, priceRange: [0, 0] }));
       } finally {
         if (active) {
           setLoading(false);
@@ -115,19 +118,24 @@ export default function CategoryPageClient({ slug }: CategoryPageClientProps) {
     };
   }, [slug]);
 
-  const handleConditionChange = (condition: string) => {
-    setSelectedConditions((prev) =>
-      prev.includes(condition)
-        ? prev.filter((item) => item !== condition)
-        : [...prev, condition]
-    );
+  const handleFiltersChange = (newFilters: Partial<FilterState>) => {
+    setFilters(prev => ({ ...prev, ...newFilters }));
+  };
+
+  const handleClearFilters = () => {
+    setFilters({
+      searchTerm: '',
+      locationFilter: '',
+      priceRange: priceBounds,
+      selectedConditions: [],
+    });
   };
 
   const filteredProducts = products.filter((product) =>
-    product.title.toLowerCase().includes(searchTerm.toLowerCase()) &&
-    (locationFilter === '' || product.location.toLowerCase().includes(locationFilter.toLowerCase())) &&
-    product.price >= priceRange[0] &&
-    product.price <= priceRange[1]
+    product.title.toLowerCase().includes(filters.searchTerm.toLowerCase()) &&
+    (filters.locationFilter === '' || product.location.toLowerCase().includes(filters.locationFilter.toLowerCase())) &&
+    product.price >= filters.priceRange[0] &&
+    product.price <= filters.priceRange[1]
   );
 
   const sortedProducts = [...filteredProducts].sort((a, b) => {
@@ -214,112 +222,12 @@ export default function CategoryPageClient({ slug }: CategoryPageClientProps) {
             <Typography variant="h6" sx={{ mb: 3, fontWeight: 600 }}>
               Filtros
             </Typography>
-
-            <Box sx={{ mb: 3 }}>
-              <Typography variant="subtitle2" sx={{ mb: 1, fontWeight: 600 }}>
-                Buscar
-              </Typography>
-              <TextField
-                fullWidth
-                size="small"
-                placeholder="Buscar produtos..."
-                value={searchTerm}
-                onChange={(event) => setSearchTerm(event.target.value)}
-                InputProps={{
-                  startAdornment: (
-                    <InputAdornment position="start">
-                      <Search fontSize="small" />
-                    </InputAdornment>
-                  ),
-                }}
-              />
-            </Box>
-
-            <Divider sx={{ my: 2 }} />
-
-            <Box sx={{ mb: 3 }}>
-              <Typography variant="subtitle2" sx={{ mb: 1, fontWeight: 600 }}>
-                Localização
-              </Typography>
-              <TextField
-                fullWidth
-                size="small"
-                placeholder="Cidade, Estado"
-                value={locationFilter}
-                onChange={(event) => setLocationFilter(event.target.value)}
-                slotProps={{
-                  input: {
-                    startAdornment: (
-                      <InputAdornment position="start">
-                        <LocationOn fontSize="small" />
-                      </InputAdornment>
-                    ),
-                  },
-                }}
-              />
-            </Box>
-
-            <Divider sx={{ my: 2 }} />
-
-            <Box sx={{ mb: 3 }}>
-              <Typography variant="subtitle2" sx={{ mb: 2, fontWeight: 600 }}>
-                Faixa de Preço
-              </Typography>
-              <Slider
-                value={priceRange}
-                onChange={(_, newValue) => setPriceRange(newValue as [number, number])}
-                valueLabelDisplay="auto"
-                min={priceBounds[0]}
-                max={priceBounds[1] || 0}
-                valueLabelFormat={(value) => `R$ ${value.toFixed(2)}`}
-                sx={{ mb: 1 }}
-                disabled={priceBounds[1] === 0}
-              />
-              <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
-                <Typography variant="caption" color="text.secondary">
-                  R$ {priceRange[0].toFixed(2)}
-                </Typography>
-                <Typography variant="caption" color="text.secondary">
-                  R$ {priceRange[1].toFixed(2)}
-                </Typography>
-              </Box>
-            </Box>
-
-            <Divider sx={{ my: 2 }} />
-
-            <Box sx={{ mb: 3 }}>
-              <Typography variant="subtitle2" sx={{ mb: 1, fontWeight: 600 }}>
-                Estado
-              </Typography>
-              <FormGroup>
-                {['Novo', 'Usado - Excelente', 'Usado - Bom', 'Usado - Regular'].map((condition) => (
-                  <FormControlLabel
-                    key={condition}
-                    control={
-                      <Checkbox
-                        size="small"
-                        checked={selectedConditions.includes(condition)}
-                        onChange={() => handleConditionChange(condition)}
-                      />
-                    }
-                    label={<Typography variant="body2">{condition}</Typography>}
-                  />
-                ))}
-              </FormGroup>
-            </Box>
-
-            <Button
-              fullWidth
-              variant="outlined"
-              onClick={() => {
-                setSearchTerm('');
-                setLocationFilter('');
-                setPriceRange(priceBounds);
-                setSelectedConditions([]);
-              }}
-            >
-              Limpar Filtros
-            </Button>
+            <ProductFilters
+              filters={filters}
+              priceBounds={priceBounds}
+              onFiltersChange={handleFiltersChange}
+              onClearFilters={handleClearFilters}
+            />
           </Paper>
         </Box>
 
@@ -367,31 +275,33 @@ export default function CategoryPageClient({ slug }: CategoryPageClientProps) {
             </Box>
           </Paper>
 
-          {(searchTerm || locationFilter || selectedConditions.length > 0) && (
+          {(filters.searchTerm || filters.locationFilter || filters.selectedConditions.length > 0) && (
             <Box sx={{ mb: 3 }}>
               <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
                 Filtros ativos:
               </Typography>
               <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap' }}>
-                {searchTerm && (
+                {filters.searchTerm && (
                   <Chip
-                    label={`Busca: "${searchTerm}"`}
-                    onDelete={() => setSearchTerm('')}
+                    label={`Busca: "${filters.searchTerm}"`}
+                    onDelete={() => handleFiltersChange({ searchTerm: '' })}
                     size="small"
                   />
                 )}
-                {locationFilter && (
+                {filters.locationFilter && (
                   <Chip
-                    label={`Local: "${locationFilter}"`}
-                    onDelete={() => setLocationFilter('')}
+                    label={`Local: "${filters.locationFilter}"`}
+                    onDelete={() => handleFiltersChange({ locationFilter: '' })}
                     size="small"
                   />
                 )}
-                {selectedConditions.map((condition) => (
+                {filters.selectedConditions.map((condition) => (
                   <Chip
                     key={condition}
                     label={condition}
-                    onDelete={() => handleConditionChange(condition)}
+                    onDelete={() => handleFiltersChange({ 
+                      selectedConditions: filters.selectedConditions.filter(c => c !== condition) 
+                    })}
                     size="small"
                   />
                 ))}
@@ -410,12 +320,7 @@ export default function CategoryPageClient({ slug }: CategoryPageClientProps) {
               <Box
                 sx={{
                   display: 'grid',
-                  gridTemplateColumns: {
-                    xs: '1fr',
-                    sm: 'repeat(2, 1fr)',
-                    md: 'repeat(2, 1fr)',
-                    lg: 'repeat(3, 1fr)',
-                  },
+                  gridTemplateColumns: responsiveGrid.productsList,
                   gap: 3,
                 }}
               >
@@ -474,112 +379,21 @@ export default function CategoryPageClient({ slug }: CategoryPageClientProps) {
           </Stack>
           <Divider />
 
-          {/* Conteúdo dos filtros (mesmo do sidebar) */}
+          {/* Conteúdo dos filtros */}
           <Box sx={{ px: 2, py: 2, overflowY: 'auto', overflowX: 'hidden', flex: 1 }}>
-            <Box sx={{ mb: 3 }}>
-              <Typography variant="subtitle2" sx={{ mb: 1, fontWeight: 600 }}>
-                Buscar
-              </Typography>
-              <TextField
-                fullWidth
-                size="small"
-                placeholder="Buscar produtos..."
-                value={searchTerm}
-                onChange={(event) => setSearchTerm(event.target.value)}
-                InputProps={{
-                  startAdornment: (
-                    <InputAdornment position="start">
-                      <Search fontSize="small" />
-                    </InputAdornment>
-                  ),
-                }}
-              />
-            </Box>
-
-            <Divider sx={{ my: 2 }} />
-
-            <Box sx={{ mb: 3 }}>
-              <Typography variant="subtitle2" sx={{ mb: 1, fontWeight: 600 }}>
-                Localização
-              </Typography>
-              <TextField
-                fullWidth
-                size="small"
-                placeholder="Cidade, Estado"
-                value={locationFilter}
-                onChange={(event) => setLocationFilter(event.target.value)}
-                slotProps={{
-                  input: {
-                    startAdornment: (
-                      <InputAdornment position="start">
-                        <LocationOn fontSize="small" />
-                      </InputAdornment>
-                    ),
-                  },
-                }}
-              />
-            </Box>
-
-            <Divider sx={{ my: 2 }} />
-
-            <Box sx={{ mb: 3 }}>
-              <Typography variant="subtitle2" sx={{ mb: 2, fontWeight: 600 }}>
-                Faixa de Preço
-              </Typography>
-              <Slider
-                value={priceRange}
-                onChange={(_, newValue) => setPriceRange(newValue as [number, number])}
-                valueLabelDisplay="auto"
-                min={priceBounds[0]}
-                max={priceBounds[1] || 0}
-                valueLabelFormat={(value) => `R$ ${value.toFixed(2)}`}
-                sx={{ mb: 1 }}
-                disabled={priceBounds[1] === 0}
-              />
-              <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
-                <Typography variant="caption" color="text.secondary">
-                  R$ {priceRange[0].toFixed(2)}
-                </Typography>
-                <Typography variant="caption" color="text.secondary">
-                  R$ {priceRange[1].toFixed(2)}
-                </Typography>
-              </Box>
-            </Box>
-
-            <Divider sx={{ my: 2 }} />
-
-            <Box sx={{ mb: 3 }}>
-              <Typography variant="subtitle2" sx={{ mb: 1, fontWeight: 600 }}>
-                Estado
-              </Typography>
-              <FormGroup>
-                {['Novo', 'Usado - Excelente', 'Usado - Bom', 'Usado - Regular'].map((condition) => (
-                  <FormControlLabel
-                    key={condition}
-                    control={
-                      <Checkbox
-                        size="small"
-                        checked={selectedConditions.includes(condition)}
-                        onChange={() => handleConditionChange(condition)}
-                      />
-                    }
-                    label={<Typography variant="body2">{condition}</Typography>}
-                  />
-                ))}
-              </FormGroup>
-            </Box>
+            <ProductFilters
+              filters={filters}
+              priceBounds={priceBounds}
+              onFiltersChange={handleFiltersChange}
+              onClearFilters={handleClearFilters}
+            />
           </Box>
           <Divider />
           <Box sx={{ p: 2, display: 'flex', gap: 1 }}>
             <Button
               fullWidth
               variant="outlined"
-              onClick={() => {
-                setSearchTerm('');
-                setLocationFilter('');
-                setPriceRange(priceBounds);
-                setSelectedConditions([]);
-              }}
+              onClick={handleClearFilters}
             >
               Limpar
             </Button>

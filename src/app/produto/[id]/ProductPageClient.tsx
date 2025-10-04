@@ -26,41 +26,12 @@ import {
   Schedule,
 } from '@mui/icons-material';
 import type { Product, Category } from '../../../data/products';
-import SimpleImageGallery from '../../../components/SimpleImageGallery';
+import ImageGallery from '../../../components/ImageGallery';
 import { fetchProductById, fetchCategoryById } from '../../../lib/api';
 import AppLayout from '../../../components/AppLayout';
+import { useFavorites } from '../../../hooks/useFavorites';
+import { formatCurrency, formatDate, formatDateTime, formatQuantity } from '../../../utils/formatters';
 
-function formatCurrency(currency: string, rawValue: string | number): string {
-  const normalizedValue = typeof rawValue === 'number' ? rawValue : Number(rawValue.replace(',', '.'));
-
-  if (!Number.isNaN(normalizedValue) && Number.isFinite(normalizedValue)) {
-    try {
-      return new Intl.NumberFormat('pt-BR', {
-        style: 'currency',
-        currency,
-      }).format(normalizedValue);
-    } catch {
-      // fallback handled below
-    }
-  }
-
-  return `${rawValue} ${currency}`;
-}
-
-function formatDateTime(value: string): string {
-  try {
-    return new Intl.DateTimeFormat('pt-BR', {
-      dateStyle: 'short',
-      timeStyle: 'short',
-    }).format(new Date(value));
-  } catch {
-    try {
-      return new Date(value).toLocaleString('pt-BR');
-    } catch {
-      return value;
-    }
-  }
-}
 
 interface ProductPageClientProps {
   productId: string;
@@ -71,15 +42,7 @@ export default function ProductPageClient({ productId }: ProductPageClientProps)
   const [category, setCategory] = React.useState<Category | null>(null);
   const [loading, setLoading] = React.useState(true);
   const [error, setError] = React.useState<string | null>(null);
-  const [isFavorite, setIsFavorite] = React.useState(false);
-
-  const handleFavoriteClick = () => {
-    setIsFavorite(!isFavorite);
-  };
-
-  const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString('pt-BR');
-  };
+  const { isFavorite, toggleFavorite } = useFavorites({ productId });
 
   React.useEffect(() => {
     let active = true;
@@ -190,7 +153,7 @@ export default function ProductPageClient({ productId }: ProductPageClientProps)
           {(() => {
             const gallery = product.adDetails?.media?.gallery_images;
             const images = Array.isArray(gallery) && gallery.length > 0 ? gallery : product.images;
-            return <SimpleImageGallery images={images} title={product.title} />;
+            return <ImageGallery images={images} title={product.title} showZoom={false} />;
           })()}
 
           {/* Combined Description + Ad Details */}
@@ -224,14 +187,13 @@ export default function ProductPageClient({ productId }: ProductPageClientProps)
                   <Box>
                     <Typography variant="subtitle2" color="text.secondary">Quantidade</Typography>
                     <Typography variant="body2">
-                      {product.adDetails.quantity.value} {product.adDetails.quantity.unit}
-                      {product.adDetails.quantity.frequency ? ` • ${product.adDetails.quantity.frequency}` : ''}
+                      {formatQuantity(product.adDetails.quantity)}
                     </Typography>
                   </Box>
                   <Box>
                     <Typography variant="subtitle2" color="text.secondary">Preço</Typography>
                     <Typography variant="body2">
-                      {formatCurrency(product.adDetails.price.currency, product.adDetails.price.value)}
+                      {formatCurrency(product.adDetails.price.value, product.adDetails.price.currency)}
                     </Typography>
                   </Box>
                 </Box>
@@ -303,7 +265,7 @@ export default function ProductPageClient({ productId }: ProductPageClientProps)
                 {product.title}
               </Typography>
               <Box>
-                <IconButton aria-label="Favoritar" onClick={handleFavoriteClick}>
+                <IconButton aria-label="Favoritar" onClick={toggleFavorite}>
                   {isFavorite ? <Favorite color="error" /> : <FavoriteBorder />}
                 </IconButton>
                 <IconButton aria-label="Compartilhar">
@@ -316,8 +278,8 @@ export default function ProductPageClient({ productId }: ProductPageClientProps)
             <Paper sx={{ p: 3, borderRadius: 2, boxShadow: (t) => t.shadows[3] }}>
               <Typography variant="h3" color="primary" sx={{ fontWeight: 800, mb: 1 }}>
                 {product.adDetails?.price
-                  ? formatCurrency(product.adDetails.price.currency, product.adDetails.price.value)
-                  : `R$ ${product.price.toFixed(2).replace('.', ',')}`}
+                  ? formatCurrency(product.adDetails.price.value, product.adDetails.price.currency)
+                  : formatCurrency(product.price)}
               </Typography>
 
               <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>

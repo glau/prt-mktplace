@@ -9,28 +9,25 @@ import {
   IconButton,
   Rating,
 } from '@mui/material';
-import { alpha } from '@mui/material/styles';
 import {
   Favorite,
   FavoriteBorder,
   Verified,
   LocationOn,
 } from '@mui/icons-material';
+import { alpha } from '@mui/material/styles';
 import { Product } from '../data/products';
 import Link from 'next/link';
+import { useFavorites } from '../hooks/useFavorites';
+import { formatPrice } from '../utils/formatters';
+import { createFloatingButtonStyle, cardHoverStyle, textEllipsisStyles } from '../styles/commonStyles';
 
 interface ProductCardProps {
   product: Product;
 }
 
 export default function ProductCard({ product }: ProductCardProps) {
-  const [isFavorite, setIsFavorite] = React.useState(false);
-
-  const handleFavoriteClick = (e: React.MouseEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-    setIsFavorite(!isFavorite);
-  };
+  const { isFavorite, toggleFavorite } = useFavorites({ productId: product.id });
 
   return (
     <Link href={`/produto/${product.id}`} style={{ textDecoration: 'none' }}>
@@ -40,11 +37,7 @@ export default function ProductCard({ product }: ProductCardProps) {
           display: 'flex',
           flexDirection: 'column',
           cursor: 'pointer',
-          transition: 'transform 0.2s, box-shadow 0.2s',
-          '&:hover': {
-            transform: 'translateY(-2px)',
-            boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
-          },
+          ...cardHoverStyle,
         }}
       >
         <Box sx={{ position: 'relative' }}>
@@ -66,7 +59,7 @@ export default function ProductCard({ product }: ProductCardProps) {
                 backgroundColor: alpha(theme.palette.background.paper, 1),
               },
             })}
-            onClick={handleFavoriteClick}
+            onClick={toggleFavorite}
           >
             {isFavorite ? (
               <Favorite color="error" />
@@ -84,11 +77,8 @@ export default function ProductCard({ product }: ProductCardProps) {
               fontSize: '1rem',
               fontWeight: 600,
               mb: 1,
-              display: '-webkit-box',
-              WebkitLineClamp: 2,
-              WebkitBoxOrient: 'vertical',
-              overflow: 'hidden',
               lineHeight: 1.3,
+              ...textEllipsisStyles(2),
             }}
           >
             {product.title}
@@ -99,7 +89,7 @@ export default function ProductCard({ product }: ProductCardProps) {
             color="primary"
             sx={{ fontWeight: 700, mb: 1 }}
           >
-            R$ {product.price.toFixed(2).replace('.', ',')}
+            {formatPrice(product.price)}
           </Typography>
 
           <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
