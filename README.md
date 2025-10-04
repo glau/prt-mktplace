@@ -95,14 +95,6 @@ Config lives in `vitest.config.ts` (coverage provider: v8; reporters: text, lcov
 This repository includes a GitHub Actions workflow at `.github/workflows/test.yml` which:
 - Runs tests with coverage on push and pull_request
 - Uploads the HTML report as a build artifact
-- Optionally uploads to Codecov if `CODECOV_TOKEN` is set as a repository secret
-
-Steps to enable Codecov (optional):
-1. Create a project in Codecov and obtain the token
-2. In GitHub: Settings → Secrets and variables → Actions → New repository secret
-   - Name: `CODECOV_TOKEN`
-   - Value: your Codecov token
-3. Push a commit or open a PR; the workflow will publish coverage to Codecov
 
 Local HTML report is available after `npm run test:coverage` at `coverage/index.html`.
 
