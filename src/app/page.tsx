@@ -185,7 +185,16 @@ export default function Home() {
         </Box>
 
         {/* Footer Info */}
-        <Paper sx={{ p: 4, mt: 6, textAlign: 'center', bgcolor: 'grey.50' }}>
+        <Paper 
+          elevation={1}
+          sx={{
+            p: 4,
+            mt: 6,
+            textAlign: 'center',
+            bgcolor: 'background.paper',
+            borderColor: 'divider'
+          }}
+        >
           <Typography variant="h6" sx={{ mb: 2 }}>
             Protótipo para Validação Interna
           </Typography>

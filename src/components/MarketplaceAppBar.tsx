@@ -49,22 +49,24 @@ export default function MarketplaceAppBar({
       }}
     >
       <Toolbar
+        component="div"
         sx={{
-          gap: { xs: 1.5, md: 3 },
           py: { xs: 1, md: 1.5 },
-          flexWrap: { xs: 'nowrap', md: 'wrap' },
+          width: '100%',
+          maxWidth: { md: 1280 },
+          mx: 'auto',
+          px: { xs: 2, md: 3 },
+          position: 'relative',
+          display: 'flex',
+          justifyContent: 'space-between',
           alignItems: 'center',
+          minHeight: '64px'
         }}
       >
-        <Stack
-          direction="row"
-          spacing={{ xs: 1, md: 1.5 }}
-          alignItems="center"
-          sx={{ flexShrink: 0, flexGrow: { xs: 1, md: 0 } }}
-        >
+        <Box sx={{ display: 'flex', alignItems: 'center', flexShrink: 0 }}>
           <IconButton
             size="large"
-            sx={{ display: { xs: 'inline-flex', md: 'none' } }}
+            sx={{ display: { xs: 'inline-flex', md: 'none' }, mr: 1 }}
             color="inherit"
             onClick={onMenuClick}
             aria-label="Abrir menu"
@@ -80,18 +82,17 @@ export default function MarketplaceAppBar({
               priority
             />
           </Link>
-        </Stack>
+        </Box>
 
-        <Stack
-          direction="row"
-          spacing={1}
-          alignItems="center"
-          sx={{
-            flexGrow: 1,
-            justifyContent: { xs: 'flex-start', md: 'center' },
-            display: { xs: 'none', md: 'flex' },
-          }}
-        >
+        <Box sx={{
+          position: 'absolute',
+          left: '50%',
+          top: '50%',
+          transform: 'translate(-50%, -50%)',
+          display: { xs: 'none', md: 'flex' },
+          gap: 1,
+          alignItems: 'center'
+        }}>
           <Button endIcon={<ExpandMore />} color="inherit" sx={{ textTransform: 'none', fontWeight: 600 }}>
             Comprar
           </Button>
@@ -110,9 +111,9 @@ export default function MarketplaceAppBar({
           <Button color="inherit" sx={{ textTransform: 'none', fontWeight: 500 }}>
             Ajuda
           </Button>
-        </Stack>
+        </Box>
 
-        <Stack direction="row" spacing={1.5} alignItems="center" sx={{ flexShrink: 0 }}>
+        <Box sx={{ display: 'flex', gap: 1.5, alignItems: 'center', flexShrink: 0 }}>
           <IconButton color="inherit" onClick={toggleColorMode} aria-label="Alternar tema">
             {mode === 'dark' ? <LightMode /> : <DarkMode />}
           </IconButton>
@@ -148,7 +149,7 @@ export default function MarketplaceAppBar({
               </Avatar>
             </>
           ) : null}
-        </Stack>
+        </Box>
       </Toolbar>
     </AppBar>
   );
