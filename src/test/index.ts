@@ -40,6 +40,7 @@ export {
   renderWithColorMode,
   renderWithLayout,
   // Re-export de @testing-library/react
+  render,
   screen,
   waitFor,
   within,
