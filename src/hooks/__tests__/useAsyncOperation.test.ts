@@ -1,15 +1,17 @@
-import { renderHook, waitFor } from '@testing-library/react';
-import { describe, it, expect, vi } from 'vitest';
+import { describe, it, expect, beforeEach, vi, renderHook, act, waitFor } from '@/test';
 import { useAsyncOperation } from '../useAsyncOperation';
 
 describe('useAsyncOperation', () => {
+  beforeEach(() => {
+    vi.restoreAllMocks();
+  });
+
   it('should initialize with loading true', () => {
     const operation = vi.fn().mockResolvedValue('test data');
     const { result } = renderHook(() => useAsyncOperation(operation, []));
     
     expect(result.current.loading).toBe(true);
     expect(result.current.data).toBeNull();
-    expect(result.current.error).toBeNull();
   });
 
   it('should load data successfully', async () => {

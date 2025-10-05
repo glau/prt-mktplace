@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
+import { describe, it, expect, beforeEach, afterEach, vi } from '@/test';
 import { fetchCategories, fetchCategoryById, fetchProducts, fetchProductById } from '../api';
 import type { Category, Product } from '../../data/products';
 

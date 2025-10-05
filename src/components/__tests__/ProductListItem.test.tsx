@@ -1,6 +1,7 @@
 import React from 'react';
-import { render, screen, fireEvent } from '@testing-library/react';
-import type { Product } from '../../data/products';
+import { describe, it, expect, screen, render, fireEvent } from '@/test';
+import { createTestProduct } from '@/test';
+import { vi } from 'vitest';
 
 let toggleSpy: ReturnType<typeof vi.fn>;
 vi.mock('../../hooks/useFavorites', () => {
@@ -12,17 +13,14 @@ vi.mock('../../hooks/useFavorites', () => {
 
 const ProductListItem = (await import('../ProductListItem')).default;
 
-const baseProduct = {
+const baseProduct = createTestProduct({
   id: 'p2',
   title: 'Produto Lista',
   description: 'Descrição detalhada do produto em lista',
   price: 250,
   location: 'Curitiba - PR',
-  images: ['/img2.jpg'],
-  category: 'cat',
   seller: { name: 'Fornecedor', rating: 4.2, verified: false },
-  specs: {},
-} as unknown as Product;
+});
 
 describe('ProductListItem', () => {
   it('renders list item details', () => {

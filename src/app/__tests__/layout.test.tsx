@@ -1,6 +1,6 @@
 import React from 'react';
-import { render, screen } from '@testing-library/react';
-import { describe, it, expect, vi } from 'vitest';
+import { describe, it, expect, screen, render } from '@/test';
+import { vi } from 'vitest';
 
 // Mock providers to simple pass-throughs
 vi.mock('@mui/material-nextjs/v15-appRouter', () => ({

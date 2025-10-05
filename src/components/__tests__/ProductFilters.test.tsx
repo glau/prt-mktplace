@@ -1,5 +1,5 @@
 import React from 'react';
-import { render, screen, fireEvent } from '@testing-library/react';
+import { describe, it, expect, screen, render, fireEvent } from '@/test';
 import ProductFilters, { type FilterState } from '../ProductFilters';
 
 describe('ProductFilters', () => {

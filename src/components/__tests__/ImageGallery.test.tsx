@@ -1,5 +1,5 @@
 import React from 'react';
-import { render, screen, fireEvent } from '@testing-library/react';
+import { describe, it, expect, screen, render, fireEvent } from '@/test';
 import ImageGallery from '../ImageGallery';
 
 // In case next/image needs mocking in tests, many setups alias it to a plain img automatically.

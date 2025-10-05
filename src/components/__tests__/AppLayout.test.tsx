@@ -1,14 +1,10 @@
 import React from 'react';
-import { render, screen, fireEvent } from '@testing-library/react';
+import { describe, it, expect, screen, fireEvent, renderWithColorMode } from '@/test';
 import AppLayout from '../AppLayout';
-import ColorModeProvider from '../../app/providers/ColorModeProvider';
-
-const renderWithProviders = (ui: React.ReactElement) =>
-  render(<ColorModeProvider>{ui}</ColorModeProvider>);
 
 describe('AppLayout', () => {
   it('renders children content', () => {
-    renderWithProviders(
+    renderWithColorMode(
       <AppLayout>
         <div data-testid="content">Hello</div>
       </AppLayout>
@@ -18,7 +14,7 @@ describe('AppLayout', () => {
   });
 
   it('shows app bar by default and can open mobile drawer', () => {
-    renderWithProviders(
+    renderWithColorMode(
       <AppLayout>
         <div>content</div>
       </AppLayout>
@@ -31,7 +27,7 @@ describe('AppLayout', () => {
   });
 
   it('can hide app bar when showAppBar=false', () => {
-    renderWithProviders(
+    renderWithColorMode(
       <AppLayout showAppBar={false}>
         <div>content</div>
       </AppLayout>

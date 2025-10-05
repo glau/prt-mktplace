@@ -1,5 +1,4 @@
-import { renderHook, act } from '@testing-library/react';
-import { describe, it, expect, beforeEach, vi } from 'vitest';
+import { describe, it, expect, beforeEach, vi, renderHook, act } from '@/test';
 import { useFavorites } from '../useFavorites';
 
 describe('useFavorites', () => {

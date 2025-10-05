@@ -1,6 +1,7 @@
 import React from 'react';
-import { render, screen, waitFor } from '@testing-library/react';
-import type { Mock } from 'vitest';
+import { describe, it, expect, screen, render, type Mock } from '@/test';
+import { createTestProduct, createTestCategory } from '@/test';
+import { vi } from 'vitest';
 
 vi.mock('../../app/providers/ColorModeProvider', () => ({
   useColorMode: () => ({ mode: 'light', toggleColorMode: vi.fn() }),
@@ -10,34 +11,10 @@ vi.mock('../../components/AppLayout', () => ({
   default: ({ children }: { children: React.ReactNode }) => <div>{children}</div>,
 }));
 
+// Mock da API - configurado nos testes
 vi.mock('../../lib/api', () => ({
-  fetchProductById: vi.fn(async (id: string) => ({
-    id,
-    title: 'Produto Detalhe',
-    price: 99.9,
-    location: 'São Paulo, SP',
-    category: 'borracha',
-    description: 'Descrição longa',
-    images: ['/img.jpg'],
-    seller: { name: 'Loja', rating: 4.8, verified: true },
-    createdAt: '2024-01-01T00:00:00Z',
-    adDetails: {
-      id: 1,
-      title: 'Produto Detalhe',
-      category: 'borracha',
-      ad_type: 'Venda',
-      slug: 'produto-detalhe',
-      description: 'Descrição longa',
-      quantity: { value: '1', unit: 'un', frequency: 'Mensal' },
-      price: { currency: 'BRL', value: '99.90' },
-      classification: { origin: 'X', hazard_status: 'Não perigoso' },
-      logistics: { transport_available: true, transport_details: 'Entrega disponível' },
-      equipment: { quantity: '0', name: '' },
-      metadata: { creation_date: '2024-01-01T00:00:00Z', last_access_date: '2024-01-02T00:00:00Z', required_documents: false },
-      media: { main_image_url: '/img.jpg', gallery_images: ['/img.jpg'] },
-    },
-  })),
-  fetchCategoryById: vi.fn(async () => ({ id: 'borracha', name: 'Borracha', count: 10 })),
+  fetchProductById: vi.fn(),
+  fetchCategoryById: vi.fn(),
 }));
 
 // Mock favorites hook to avoid localStorage side effects
@@ -49,6 +26,19 @@ const ProductPageClient = (await import('../produto/[id]/ProductPageClient')).de
 
 describe('ProductPageClient', () => {
   it('renders product details and gallery', async () => {
+    // Configura mocks com factories
+    const api = await import('../../lib/api');
+    const product = createTestProduct({
+      id: '123',
+      title: 'Produto Detalhe',
+      price: 99.9,
+      category: 'borracha',
+    });
+    const category = createTestCategory({ id: 'borracha', name: 'Borracha', count: 10 });
+    
+    (api.fetchProductById as Mock).mockResolvedValueOnce(product);
+    (api.fetchCategoryById as Mock).mockResolvedValueOnce(category);
+
     render(<ProductPageClient productId="123" />);
 
     // Loading indicator appears first
@@ -64,7 +54,7 @@ describe('ProductPageClient', () => {
 
   it('shows error UI when API fails', async () => {
     const api = await import('../../lib/api');
-    (api.fetchProductById as unknown as Mock).mockRejectedValueOnce(new Error('fail'));
+    (api.fetchProductById as Mock).mockRejectedValueOnce(new Error('fail'));
 
     render(<ProductPageClient productId="x" />);
 

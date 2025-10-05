@@ -1,13 +1,11 @@
 import React from 'react';
-import { render, screen, fireEvent } from '@testing-library/react';
+import { describe, it, expect, screen, render, fireEvent } from '@/test';
+import { vi } from 'vitest';
 
-let toggleSpy: ReturnType<typeof vi.fn>;
-vi.mock('../../app/providers/ColorModeProvider', () => {
-  toggleSpy = vi.fn();
-  return {
-    useColorMode: () => ({ mode: 'light', toggleColorMode: toggleSpy }),
-  };
-});
+const toggleSpy = vi.fn();
+vi.mock('../../app/providers/ColorModeProvider', () => ({
+  useColorMode: () => ({ mode: 'light', toggleColorMode: toggleSpy }),
+}));
 
 const MarketplaceAppBar = (await import('../MarketplaceAppBar')).default;
 

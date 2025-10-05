@@ -1,6 +1,6 @@
 import React from 'react';
-import { render, screen } from '@testing-library/react';
-import { vi, describe, it, expect } from 'vitest';
+import { describe, it, expect, screen, render } from '@/test';
+import { vi } from 'vitest';
 
 const clientSpy = vi.fn();
 vi.mock('../produto/[id]/ProductPageClient', () => ({
