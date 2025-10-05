@@ -14,7 +14,6 @@ import {
   Menu as MenuIcon,
   ExpandMore,
   PersonOutline,
-  Search as SearchIcon,
   DarkMode,
   LightMode,
 } from '@mui/icons-material';
@@ -95,25 +94,16 @@ export default function MarketplaceAppBar({
             Vender
           </Button>
           <Button color="inherit" sx={{ textTransform: 'none', fontWeight: 500 }}>
-            Assinar
-          </Button>
-          <Button color="inherit" sx={{ textTransform: 'none', fontWeight: 500 }}>
             Serviços
           </Button>
           <Button color="inherit" sx={{ textTransform: 'none', fontWeight: 500 }}>
             Notícias
           </Button>
-          <Button color="inherit" sx={{ textTransform: 'none', fontWeight: 500 }}>
-            Ajuda
-          </Button>
         </Box>
 
         <Box sx={{ display: 'flex', gap: 1.5, alignItems: 'center', flexShrink: 0 }}>
-          <IconButton color="inherit" onClick={toggleColorMode} aria-label="Alternar tema">
+          <IconButton color="inherit" onClick={toggleColorMode} aria-label="Alternar tema" sx={{ display: { xs: 'none', md: 'inline-flex' } }}>
             {mode === 'dark' ? <LightMode /> : <DarkMode />}
-          </IconButton>
-          <IconButton color="inherit" sx={{ display: { xs: 'none', md: 'inline-flex' } }}>
-            <SearchIcon />
           </IconButton>
           {showAuthButtons ? (
             <>
@@ -149,3 +139,4 @@ export default function MarketplaceAppBar({
     </AppBar>
   );
 }
+

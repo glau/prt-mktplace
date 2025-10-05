@@ -19,13 +19,14 @@ import {
   Close as CloseIcon,
   ShoppingBagOutlined,
   StorefrontOutlined,
-  SubscriptionsOutlined,
   BuildCircleOutlined,
   ArticleOutlined,
-  HelpOutlineOutlined,
   PersonOutline,
+  DarkMode,
+  LightMode,
 } from '@mui/icons-material';
 import MarketplaceAppBar from './MarketplaceAppBar';
+import { useColorMode } from '../app/providers/ColorModeProvider';
 
 export interface AppLayoutProps {
   children: React.ReactNode;
@@ -39,6 +40,7 @@ export default function AppLayout({
   onMenuClick,
 }: AppLayoutProps) {
   const [mobileNavOpen, setMobileNavOpen] = React.useState(false);
+  const { mode, toggleColorMode } = useColorMode();
 
   const handleOpenMobileNav = React.useCallback(() => {
     setMobileNavOpen(true);
@@ -64,12 +66,6 @@ export default function AppLayout({
         description: 'Anunciar materiais e resíduos',
       },
       {
-        label: 'Assinar',
-        href: '/#assinar',
-        icon: <SubscriptionsOutlined fontSize="small" />,
-        description: 'Serviços e planos personalizados',
-      },
-      {
         label: 'Serviços',
         href: '/#servicos',
         icon: <BuildCircleOutlined fontSize="small" />,
@@ -80,12 +76,6 @@ export default function AppLayout({
         href: '/#noticias',
         icon: <ArticleOutlined fontSize="small" />,
         description: 'Conteúdos e novidades do setor',
-      },
-      {
-        label: 'Ajuda',
-        href: '/#ajuda',
-        icon: <HelpOutlineOutlined fontSize="small" />,
-        description: 'Central de suporte e FAQs',
       },
     ],
     [],
@@ -144,9 +134,20 @@ export default function AppLayout({
             >
               Entrar na conta
             </Button>
+            <Button
+              variant="text"
+              color="inherit"
+              startIcon={mode === 'dark' ? <LightMode /> : <DarkMode />}
+              onClick={toggleColorMode}
+              sx={{ justifyContent: 'flex-start', textTransform: 'none', fontWeight: 600 }}
+              aria-label="Alternar tema"
+            >
+              Alternar tema
+            </Button>
           </Stack>
         </Box>
       </Drawer>
     </Box>
   );
 }
+
