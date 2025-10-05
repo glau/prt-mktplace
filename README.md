@@ -10,13 +10,6 @@ Protótipo do marketplace B2Blue usando Next.js 15 e Material UI 7 para gestão 
 - **Vitest + Testing Library** - Testes unitários e de integração
 - **MSW (Mock Service Worker)** - API mockada para demos
 
-## 📊 Estatísticas do Projeto
-
-- ✅ **39 testes** com 100% de aprovação
-- ✅ **~800 linhas** de código duplicado eliminadas
-- ✅ **6 hooks/utilitários** reutilizáveis criados
-- ✅ **Performance otimizada** com memoização estratégica
-
 ## Getting Started
 
 First, run the development server:
