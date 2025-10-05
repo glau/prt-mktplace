@@ -16,6 +16,7 @@ import {
   ZoomIn,
 } from '@mui/icons-material';
 import { alpha } from '@mui/material/styles';
+import type { Theme } from '@mui/material/styles';
 import Image from 'next/image';
 
 interface ImageGalleryProps {
@@ -26,7 +27,7 @@ interface ImageGalleryProps {
   showCounter?: boolean;
 }
 
-const navigationButtonStyles = (theme: any) => ({
+const navigationButtonStyles = (theme: Theme) => ({
   position: 'absolute',
   top: '50%',
   transform: 'translateY(-50%)',

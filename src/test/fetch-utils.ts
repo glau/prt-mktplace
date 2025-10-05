@@ -63,7 +63,7 @@ export const mockFetchError = (mock: Mock, message = 'Request failed', status = 
  */
 export const mockFetchSequence = (
   mock: Mock,
-  responses: Array<{ success: boolean; data?: any; error?: string; status?: number }>
+  responses: Array<{ success: boolean; data?: unknown; error?: string; status?: number }>
 ): void => {
   responses.forEach((response) => {
     if (response.success) {
@@ -86,7 +86,7 @@ export const mockFetchSequence = (
  */
 export const mockFetchRoutes = (
   mock: Mock,
-  routes: Record<string, any>,
+  routes: Record<string, unknown>,
   options?: { defaultError?: string }
 ): void => {
   mock.mockImplementation((url: RequestInfo | URL) => {

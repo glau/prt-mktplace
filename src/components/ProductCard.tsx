@@ -20,7 +20,7 @@ import { Product } from '../data/products';
 import Link from 'next/link';
 import { useFavorites } from '../hooks/useFavorites';
 import { formatPrice } from '../utils/formatters';
-import { createFloatingButtonStyle, cardHoverStyle, textEllipsisStyles } from '../styles/commonStyles';
+import { cardHoverStyle, textEllipsisStyles } from '../styles/commonStyles';
 
 interface ProductCardProps {
   product: Product;

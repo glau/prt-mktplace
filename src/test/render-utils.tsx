@@ -46,7 +46,8 @@ export const renderWithProviders = (
 ): RenderResult => {
   const {
     withAppLayout = false,
-    colorMode = 'light',
+    // colorMode mantido na interface por compatibilidade mas não usado
+    // ColorModeProvider usa localStorage/system preference
     appLayoutProps = {},
     ...renderOptions
   } = options;
@@ -60,8 +61,9 @@ export const renderWithProviders = (
     }
 
     // Sempre wrap com ColorModeProvider
+    // Note: ColorModeProvider não aceita initialMode, usa localStorage/system preference
     return (
-      <ColorModeProvider initialMode={colorMode}>
+      <ColorModeProvider>
         {content}
       </ColorModeProvider>
     );

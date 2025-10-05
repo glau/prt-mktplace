@@ -9,23 +9,17 @@ import {
   FormControl,
   Select,
   MenuItem,
-  TextField,
-  InputAdornment,
   Chip,
   Paper,
   Divider,
   Button,
-  Slider,
-  FormControlLabel,
-  Checkbox,
-  FormGroup,
   Drawer,
   IconButton,
   Stack,
   useMediaQuery,
   useTheme,
 } from '@mui/material';
-import { Search, FilterList, LocationOn, ViewModule, ViewList, Close } from '@mui/icons-material';
+import { FilterList, ViewModule, ViewList, Close } from '@mui/icons-material';
 import CircularProgress from '@mui/material/CircularProgress';
 import type { Category, Product } from '../../../data/products';
 import ProductCard from '../../../components/ProductCard';

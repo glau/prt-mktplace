@@ -11,9 +11,11 @@ vi.mock('../../app/providers/ColorModeProvider', () => ({
   useColorMode: () => ({ mode: 'light', toggleColorMode: vi.fn() }),
 }));
 
-let fetchMock: ((input: RequestInfo | URL, init?: RequestInit) => Promise<Response>) & { mockImplementation: any };
+type FetchMock = ((input: RequestInfo | URL, init?: RequestInit) => Promise<Response>) & { mockImplementation: (fn: (input: RequestInfo | URL) => Promise<Response>) => void };
 
-function okJson(body: any): Response {
+let fetchMock: FetchMock;
+
+function okJson(body: unknown): Response {
   return { ok: true, json: async () => body } as unknown as Response;
 }
 function failText(message: string): Response {
@@ -25,8 +27,8 @@ const CategoriesPage = (await import('../categorias/page')).default;
 describe('Categorias page', () => {
   beforeEach(() => {
     vi.unstubAllGlobals();
-    fetchMock = vi.fn() as any;
-    vi.stubGlobal('fetch', fetchMock as any);
+    fetchMock = vi.fn() as FetchMock;
+    vi.stubGlobal('fetch', fetchMock);
   });
   afterEach(() => {
     vi.unstubAllGlobals();
