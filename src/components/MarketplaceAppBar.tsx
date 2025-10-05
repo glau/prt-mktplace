@@ -4,20 +4,15 @@ import React from 'react';
 import {
   AppBar,
   Toolbar,
-  Stack,
   Box,
-  Typography,
   IconButton,
   Button,
-  Badge,
   Avatar,
   Divider,
 } from '@mui/material';
 import {
   Menu as MenuIcon,
   ExpandMore,
-  FavoriteBorder,
-  ShoppingCartOutlined,
   PersonOutline,
   Search as SearchIcon,
   DarkMode,

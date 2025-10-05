@@ -55,7 +55,7 @@ export function useAsyncOperation<T>(
     return () => {
       active = false;
     };
-  }, dependencies);
+  }, [operation, options, ...dependencies]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const retry = React.useCallback(() => {
     setState(prev => ({ ...prev, loading: true, error: null }));

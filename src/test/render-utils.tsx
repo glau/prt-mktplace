@@ -60,8 +60,15 @@ export const renderWithProviders = (
     }
 
     // Sempre wrap com ColorModeProvider
+    // Se um modo foi solicitado, define no localStorage antes de renderizar
+    if (typeof window !== 'undefined' && colorMode) {
+      try {
+        window.localStorage.setItem('color-mode', colorMode);
+      } catch {}
+    }
+
     return (
-      <ColorModeProvider initialMode={colorMode}>
+      <ColorModeProvider>
         {content}
       </ColorModeProvider>
     );

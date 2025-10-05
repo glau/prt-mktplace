@@ -1,10 +1,10 @@
-import { describe, it, expect, beforeEach, afterEach, vi } from '@/test';
+import { describe, it, expect, beforeEach, afterEach, vi, type Mock } from '@/test';
 import { fetchCategories, fetchCategoryById, fetchProducts, fetchProductById } from '../api';
 import type { Category, Product } from '../../data/products';
 
-let fetchMock: ((input: RequestInfo | URL, init?: RequestInit) => Promise<Response>) & { mockImplementation: any };
+let fetchMock: Mock;
 
-function okJson(body: any): Response {
+function okJson<T>(body: T): Response {
   return {
     ok: true,
     json: async () => body,
@@ -21,8 +21,8 @@ function failText(message: string): Response {
 describe('lib/api', () => {
   beforeEach(() => {
     vi.unstubAllGlobals();
-    fetchMock = vi.fn() as any;
-    vi.stubGlobal('fetch', fetchMock as any);
+    fetchMock = vi.fn();
+    vi.stubGlobal('fetch', fetchMock as unknown as typeof fetch);
   });
   afterEach(() => {
     vi.unstubAllGlobals();
@@ -42,7 +42,7 @@ describe('lib/api', () => {
   });
 
   it('fetchCategories throws on error', async () => {
-    fetchMock.mockImplementation((url: RequestInfo | URL) => Promise.resolve(failText('Erro X')));
+    fetchMock.mockImplementation(() => Promise.resolve(failText('Erro X')));
     await expect(fetchCategories()).rejects.toThrow('Erro X');
   });
 

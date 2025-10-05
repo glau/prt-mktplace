@@ -61,9 +61,9 @@ export const mockFetchError = (mock: Mock, message = 'Request failed', status = 
 /**
  * Mocka uma sequência de respostas (útil quando múltiplos fetches são feitos)
  */
-export const mockFetchSequence = (
+export const mockFetchSequence = <T = unknown>(
   mock: Mock,
-  responses: Array<{ success: boolean; data?: any; error?: string; status?: number }>
+  responses: Array<{ success: boolean; data?: T; error?: string; status?: number }>
 ): void => {
   responses.forEach((response) => {
     if (response.success) {
@@ -84,9 +84,9 @@ export const mockFetchSequence = (
  *   '/api/products': { products: [...] },
  * });
  */
-export const mockFetchRoutes = (
+export const mockFetchRoutes = <T = unknown>(
   mock: Mock,
-  routes: Record<string, any>,
+  routes: Record<string, T>,
   options?: { defaultError?: string }
 ): void => {
   mock.mockImplementation((url: RequestInfo | URL) => {

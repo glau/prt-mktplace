@@ -1,8 +1,7 @@
 /// <reference types="vitest/globals" />
 import '@testing-library/jest-dom/vitest';
-import { afterAll, afterEach, beforeAll, vi } from 'vitest';
+import { afterAll, afterEach, beforeAll } from 'vitest';
 import { server } from '../mocks/server';
-import React from 'react';
 
 // JSDOM polyfill for matchMedia used by some components
 if (typeof window !== 'undefined' && !window.matchMedia) {

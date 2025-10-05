@@ -1,6 +1,6 @@
 import React from 'react';
 import { render, screen } from '@testing-library/react';
-import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
+import { describe, it, expect, vi, beforeEach, afterEach, type Mock } from 'vitest';
 import type { Category, Product } from '../../data/products';
 
 vi.mock('../../components/AppLayout', () => ({
@@ -11,9 +11,9 @@ vi.mock('../../app/providers/ColorModeProvider', () => ({
   useColorMode: () => ({ mode: 'light', toggleColorMode: vi.fn() }),
 }));
 
-let fetchMock: ((input: RequestInfo | URL, init?: RequestInit) => Promise<Response>) & { mockImplementation: any };
+let fetchMock: Mock;
 
-function okJson(body: any): Response {
+function okJson<T>(body: T): Response {
   return { ok: true, json: async () => body } as unknown as Response;
 }
 function failText(message: string): Response {
@@ -25,8 +25,8 @@ const CategoriesPage = (await import('../categorias/page')).default;
 describe('Categorias page', () => {
   beforeEach(() => {
     vi.unstubAllGlobals();
-    fetchMock = vi.fn() as any;
-    vi.stubGlobal('fetch', fetchMock as any);
+    fetchMock = vi.fn();
+    vi.stubGlobal('fetch', fetchMock as unknown as typeof fetch);
   });
   afterEach(() => {
     vi.unstubAllGlobals();

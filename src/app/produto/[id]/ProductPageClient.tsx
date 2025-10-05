@@ -8,7 +8,6 @@ import {
   Link,
   Paper,
   Button,
-  Chip,
   Avatar,
   Rating,
   Divider,

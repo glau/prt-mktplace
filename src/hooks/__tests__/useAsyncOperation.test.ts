@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach, vi, renderHook, act, waitFor } from '@/test';
+import { describe, it, expect, beforeEach, vi, renderHook, waitFor } from '@/test';
 import { useAsyncOperation } from '../useAsyncOperation';
 
 describe('useAsyncOperation', () => {
