@@ -14,13 +14,13 @@ import {
   Menu as MenuIcon,
   ExpandMore,
   PersonOutline,
-  Search as SearchIcon,
   DarkMode,
   LightMode,
 } from '@mui/icons-material';
 import { useColorMode } from '../app/providers/ColorModeProvider';
 import Image from 'next/image';
 import Link from 'next/link';
+import { coreNavItems } from '@/utils/navigation';
 
 export interface MarketplaceAppBarProps {
   showAuthButtons?: boolean;
@@ -88,32 +88,23 @@ export default function MarketplaceAppBar({
           gap: 1,
           alignItems: 'center'
         }}>
-          <Button endIcon={<ExpandMore />} color="inherit" sx={{ textTransform: 'none', fontWeight: 600 }}>
-            Comprar
-          </Button>
-          <Button color="inherit" sx={{ textTransform: 'none', fontWeight: 500 }}>
-            Vender
-          </Button>
-          <Button color="inherit" sx={{ textTransform: 'none', fontWeight: 500 }}>
-            Assinar
-          </Button>
-          <Button color="inherit" sx={{ textTransform: 'none', fontWeight: 500 }}>
-            Serviços
-          </Button>
-          <Button color="inherit" sx={{ textTransform: 'none', fontWeight: 500 }}>
-            Notícias
-          </Button>
-          <Button color="inherit" sx={{ textTransform: 'none', fontWeight: 500 }}>
-            Ajuda
-          </Button>
+          {coreNavItems.map((item) => (
+            <Button
+              key={item.key}
+              color="inherit"
+              sx={{ textTransform: 'none', fontWeight: item.key === 'comprar' ? 600 : 500 }}
+              endIcon={item.key === 'comprar' ? <ExpandMore /> : undefined}
+              component={Link}
+              href={item.href}
+            >
+              {item.label}
+            </Button>
+          ))}
         </Box>
 
         <Box sx={{ display: 'flex', gap: 1.5, alignItems: 'center', flexShrink: 0 }}>
           <IconButton color="inherit" onClick={toggleColorMode} aria-label="Alternar tema">
             {mode === 'dark' ? <LightMode /> : <DarkMode />}
-          </IconButton>
-          <IconButton color="inherit" sx={{ display: { xs: 'none', md: 'inline-flex' } }}>
-            <SearchIcon />
           </IconButton>
           {showAuthButtons ? (
             <>
@@ -149,3 +140,4 @@ export default function MarketplaceAppBar({
     </AppBar>
   );
 }
+

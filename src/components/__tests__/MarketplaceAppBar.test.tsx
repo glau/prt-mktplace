@@ -36,3 +36,4 @@ describe('MarketplaceAppBar', () => {
     expect(screen.queryByText('Entrar')).not.toBeInTheDocument();
   });
 });
+

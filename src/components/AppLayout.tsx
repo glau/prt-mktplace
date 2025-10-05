@@ -19,13 +19,12 @@ import {
   Close as CloseIcon,
   ShoppingBagOutlined,
   StorefrontOutlined,
-  SubscriptionsOutlined,
   BuildCircleOutlined,
   ArticleOutlined,
-  HelpOutlineOutlined,
   PersonOutline,
 } from '@mui/icons-material';
 import MarketplaceAppBar from './MarketplaceAppBar';
+import { coreNavItems } from '@/utils/navigation';
 
 export interface AppLayoutProps {
   children: React.ReactNode;
@@ -50,44 +49,28 @@ export default function AppLayout({
   }, []);
 
   const mobileNavigationItems = React.useMemo(
-    () => [
-      {
-        label: 'Comprar',
-        href: '/#comprar',
-        icon: <ShoppingBagOutlined fontSize="small" />,
-        description: 'Explorar ofertas disponíveis',
-      },
-      {
-        label: 'Vender',
-        href: '/#vender',
-        icon: <StorefrontOutlined fontSize="small" />,
-        description: 'Anunciar materiais e resíduos',
-      },
-      {
-        label: 'Assinar',
-        href: '/#assinar',
-        icon: <SubscriptionsOutlined fontSize="small" />,
-        description: 'Serviços e planos personalizados',
-      },
-      {
-        label: 'Serviços',
-        href: '/#servicos',
-        icon: <BuildCircleOutlined fontSize="small" />,
-        description: 'Soluções logísticas e suporte',
-      },
-      {
-        label: 'Notícias',
-        href: '/#noticias',
-        icon: <ArticleOutlined fontSize="small" />,
-        description: 'Conteúdos e novidades do setor',
-      },
-      {
-        label: 'Ajuda',
-        href: '/#ajuda',
-        icon: <HelpOutlineOutlined fontSize="small" />,
-        description: 'Central de suporte e FAQs',
-      },
-    ],
+    () =>
+      coreNavItems.map((item) => {
+        const icon =
+          item.key === 'comprar' ? (
+            <ShoppingBagOutlined fontSize="small" />
+          ) : item.key === 'vender' ? (
+            <StorefrontOutlined fontSize="small" />
+          ) : item.key === 'servicos' ? (
+            <BuildCircleOutlined fontSize="small" />
+          ) : (
+            <ArticleOutlined fontSize="small" />
+          );
+        const description =
+          item.key === 'comprar'
+            ? 'Explorar ofertas disponíveis'
+            : item.key === 'vender'
+            ? 'Anunciar materiais e resíduos'
+            : item.key === 'servicos'
+            ? 'Soluções logísticas e suporte'
+            : 'Conteúdos e novidades do setor';
+        return { ...item, icon, description };
+      }),
     [],
   );
 
@@ -150,3 +133,4 @@ export default function AppLayout({
     </Box>
   );
 }
+
