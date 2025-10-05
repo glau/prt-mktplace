@@ -12,7 +12,6 @@ import {
 } from '@mui/material';
 import {
   Menu as MenuIcon,
-  ExpandMore,
   PersonOutline,
   DarkMode,
   LightMode,
@@ -20,6 +19,8 @@ import {
 import { useColorMode } from '../app/providers/ColorModeProvider';
 import Image from 'next/image';
 import Link from 'next/link';
+import DesktopNav from './nav/DesktopNav';
+import { menuItems } from '../config/navigation';
 
 export interface MarketplaceAppBarProps {
   showAuthButtons?: boolean;
@@ -82,23 +83,9 @@ export default function MarketplaceAppBar({
           position: 'absolute',
           left: '50%',
           top: '50%',
-          transform: 'translate(-50%, -50%)',
-          display: { xs: 'none', md: 'flex' },
-          gap: 1,
-          alignItems: 'center'
+          transform: 'translate(-50%, -50%)'
         }}>
-          <Button endIcon={<ExpandMore />} color="inherit" sx={{ textTransform: 'none', fontWeight: 600 }}>
-            Comprar
-          </Button>
-          <Button color="inherit" sx={{ textTransform: 'none', fontWeight: 500 }}>
-            Vender
-          </Button>
-          <Button color="inherit" sx={{ textTransform: 'none', fontWeight: 500 }}>
-            Serviços
-          </Button>
-          <Button color="inherit" sx={{ textTransform: 'none', fontWeight: 500 }}>
-            Notícias
-          </Button>
+          <DesktopNav items={menuItems} />
         </Box>
 
         <Box sx={{ display: 'flex', gap: 1.5, alignItems: 'center', flexShrink: 0 }}>
