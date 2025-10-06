@@ -16,9 +16,10 @@
  */
 
 import React from 'react';
-import { render, type RenderOptions, type RenderResult } from '@testing-library/react';
+import { render as rtlRender, type RenderOptions, type RenderResult } from '@testing-library/react';
 import ColorModeProvider from '../app/providers/ColorModeProvider';
 import AppLayout from '../components/AppLayout';
+import { UserProvider } from '../app/providers/UserProvider';
 
 /**
  * Opções customizadas para renderização com providers
@@ -64,12 +65,14 @@ export const renderWithProviders = (
     // Note: ColorModeProvider não aceita initialMode, usa localStorage/system preference
     return (
       <ColorModeProvider>
-        {content}
+        <UserProvider>
+          {content}
+        </UserProvider>
       </ColorModeProvider>
     );
   };
 
-  return render(ui, { wrapper: Wrapper, ...renderOptions });
+  return rtlRender(ui, { wrapper: Wrapper, ...renderOptions });
 };
 
 /**
@@ -99,6 +102,8 @@ export const renderWithLayout = (
  * Permite importar tudo de um lugar: import { render, screen } from 'test/render-utils'
  */
 export * from '@testing-library/react';
+// Override named export to use our provider-wrapped render by default in tests importing from '@/test'
+export const render = renderWithProviders;
 
 /**
  * Exporta renderWithProviders como default para facilitar uso

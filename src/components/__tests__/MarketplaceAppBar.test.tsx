@@ -4,6 +4,7 @@ import { vi } from 'vitest';
 
 const toggleSpy = vi.fn();
 vi.mock('../../app/providers/ColorModeProvider', () => ({
+  default: ({ children }: { children: React.ReactNode }) => <>{children}</>,
   useColorMode: () => ({ mode: 'light', toggleColorMode: toggleSpy }),
 }));
 

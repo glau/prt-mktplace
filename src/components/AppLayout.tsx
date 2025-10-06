@@ -25,6 +25,8 @@ import {
 } from '@mui/icons-material';
 import MarketplaceAppBar from './MarketplaceAppBar';
 import { coreNavItems } from '@/utils/navigation';
+import AuthDialog from './AuthDialog';
+import { useUser } from '@/app/providers/UserProvider';
 
 export interface AppLayoutProps {
   children: React.ReactNode;
@@ -38,6 +40,8 @@ export default function AppLayout({
   onMenuClick,
 }: AppLayoutProps) {
   const [mobileNavOpen, setMobileNavOpen] = React.useState(false);
+  const [authOpen, setAuthOpen] = React.useState(false);
+  const { user } = useUser();
 
   const handleOpenMobileNav = React.useCallback(() => {
     setMobileNavOpen(true);
@@ -76,7 +80,12 @@ export default function AppLayout({
 
   return (
     <Box sx={{ bgcolor: 'background.default', minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
-      {showAppBar ? <MarketplaceAppBar onMenuClick={handleOpenMobileNav} /> : null}
+      {showAppBar ? (
+        <MarketplaceAppBar
+          onMenuClick={handleOpenMobileNav}
+          onAuthClick={() => setAuthOpen(true)}
+        />
+      ) : null}
       <Box component="main" sx={{ flexGrow: 1, display: 'flex', flexDirection: 'column' }}>
         {children}
       </Box>
@@ -118,19 +127,32 @@ export default function AppLayout({
           </List>
           <Divider />
           <Stack spacing={1.5} sx={{ px: 2, py: 2.5 }}>
-            <Button
-              variant="outlined"
-              color="primary"
-              startIcon={<PersonOutline />}
-              onClick={handleCloseMobileNav}
-              sx={{ borderRadius: 999, textTransform: 'none', fontWeight: 600 }}
-            >
-              Entrar na conta
-            </Button>
+            {user ? (
+              <Button
+                variant="outlined"
+                color="primary"
+                sx={{ borderRadius: 999, textTransform: 'none', fontWeight: 600 }}
+                onClick={handleCloseMobileNav}
+              >
+                Minha Conta
+              </Button>
+            ) : (
+              <Button
+                variant="outlined"
+                color="primary"
+                startIcon={<PersonOutline />}
+                onClick={() => { setAuthOpen(true); handleCloseMobileNav(); }}
+                sx={{ borderRadius: 999, textTransform: 'none', fontWeight: 600 }}
+              >
+                Entrar na conta
+              </Button>
+            )}
           </Stack>
         </Box>
       </Drawer>
+      <AuthDialog open={authOpen} onClose={() => setAuthOpen(false)} />
     </Box>
   );
 }
+
 

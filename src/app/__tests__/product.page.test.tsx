@@ -4,6 +4,7 @@ import { createTestProduct, createTestCategory } from '@/test';
 import { vi } from 'vitest';
 
 vi.mock('../../app/providers/ColorModeProvider', () => ({
+  default: ({ children }: { children: React.ReactNode }) => <>{children}</>,
   useColorMode: () => ({ mode: 'light', toggleColorMode: vi.fn() }),
 }));
 

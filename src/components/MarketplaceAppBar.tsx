@@ -21,17 +21,21 @@ import { useColorMode } from '../app/providers/ColorModeProvider';
 import Image from 'next/image';
 import Link from 'next/link';
 import { coreNavItems } from '@/utils/navigation';
+import { useUser } from '@/app/providers/UserProvider';
 
 export interface MarketplaceAppBarProps {
   showAuthButtons?: boolean;
   onMenuClick?: () => void;
+  onAuthClick?: () => void;
 }
 
 export default function MarketplaceAppBar({
   showAuthButtons = true,
   onMenuClick,
+  onAuthClick,
 }: MarketplaceAppBarProps) {
   const { mode, toggleColorMode } = useColorMode();
+  const { user } = useUser();
   return (
     <AppBar
       position="sticky"
@@ -109,30 +113,45 @@ export default function MarketplaceAppBar({
           {showAuthButtons ? (
             <>
               <Divider orientation="vertical" flexItem sx={{ display: { xs: 'none', md: 'block' }, height: 28 }} />
-              <Button
-                variant="outlined"
-                color="primary"
-                startIcon={<PersonOutline />}
-                sx={{
-                  borderRadius: 999,
-                  px: 3,
-                  textTransform: 'none',
-                  display: { xs: 'none', sm: 'inline-flex' },
-                }}
-              >
-                Entrar
-              </Button>
-              <Avatar
-                sx={{
-                  width: 40,
-                  height: 40,
-                  bgcolor: 'transparent',
-                  color: 'inherit',
-                  display: { xs: 'inline-flex', sm: 'none' },
-                }}
-              >
-                <PersonOutline fontSize="small" />
-              </Avatar>
+              {user ? (
+                <Button
+                  variant="outlined"
+                  color="primary"
+                  sx={{ borderRadius: 999, px: 3, textTransform: 'none', display: { xs: 'none', sm: 'inline-flex' } }}
+                >
+                  Minha Conta
+                </Button>
+              ) : (
+                <>
+                  <Button
+                    variant="outlined"
+                    color="primary"
+                    startIcon={<PersonOutline />}
+                    onClick={onAuthClick}
+                    sx={{
+                      borderRadius: 999,
+                      px: 3,
+                      textTransform: 'none',
+                      display: { xs: 'none', sm: 'inline-flex' },
+                    }}
+                  >
+                    Entrar
+                  </Button>
+                  <Avatar
+                    onClick={onAuthClick}
+                    sx={{
+                      width: 40,
+                      height: 40,
+                      bgcolor: 'transparent',
+                      color: 'inherit',
+                      display: { xs: 'inline-flex', sm: 'none' },
+                      cursor: 'pointer',
+                    }}
+                  >
+                    <PersonOutline fontSize="small" />
+                  </Avatar>
+                </>
+              )}
             </>
           ) : null}
         </Box>
@@ -140,4 +159,5 @@ export default function MarketplaceAppBar({
     </AppBar>
   );
 }
+
 

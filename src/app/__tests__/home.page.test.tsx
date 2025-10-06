@@ -3,6 +3,7 @@ import { render, screen } from '@testing-library/react';
 import type { Mock } from 'vitest';
 
 vi.mock('../../app/providers/ColorModeProvider', () => ({
+  default: ({ children }: { children: React.ReactNode }) => <>{children}</>,
   useColorMode: () => ({ mode: 'light', toggleColorMode: vi.fn() }),
 }));
 

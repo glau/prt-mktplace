@@ -1,5 +1,6 @@
 import { http, HttpResponse } from 'msw';
 import { categories, products } from '../data/products';
+import { authHandlers } from './authHandlers';
 
 export const handlers = [
   // Handles GET /api/categories
@@ -49,4 +50,7 @@ export const handlers = [
 
     return HttpResponse.json({ product });
   }),
+  
+  // Auth endpoints (register, login, session)
+  ...authHandlers,
 ];

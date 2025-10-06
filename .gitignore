@@ -49,6 +49,3 @@ next-env.d.ts
 # other caches
 .turbo/
 .pnpm-store/
-
-# local developer docs (do not commit)
-docs/*.md

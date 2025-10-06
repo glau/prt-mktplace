@@ -6,6 +6,7 @@ import type { Mock } from 'vitest';
 
 // Mocks necessários para este teste
 vi.mock('../../app/providers/ColorModeProvider', () => ({
+  default: ({ children }: { children: React.ReactNode }) => <>{children}</>,
   useColorMode: () => ({ mode: 'light', toggleColorMode: vi.fn() }),
 }));
 
