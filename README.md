@@ -163,11 +163,13 @@ Senha: 1234
 - ✅ Cadastro de novos usuários
 - ✅ Persistência de sessão (sessionStorage)
 - ✅ Validação automática de token
+- ✅ Logout com limpeza de sessão
 - ✅ UI integrada (AppBar + Mobile Drawer)
 
 ### Como Usar
 1. Clique em "Entrar" no AppBar
 2. Use as credenciais de teste ou cadastre novo usuário
 3. Após login, interface muda para "Minha Conta"
+4. Para logout: clique em "Sair" (AppBar desktop ou menu mobile)
 
 **Documentação completa**: [docs/auth-feature-summary.md](docs/auth-feature-summary.md)

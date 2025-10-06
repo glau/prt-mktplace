@@ -34,10 +34,12 @@
 #### 5. **Integrações UI**
 - **MarketplaceAppBar**: 
   - Botão "Entrar" → abre AuthDialog
-  - Quando logado: mostra "Minha Conta"
+  - Quando logado: mostra "Minha Conta" + botão "Sair"
+  - Botão "Sair" → executa logout (desktop/tablet)
 - **AppLayout (Mobile Drawer)**:
   - "Entrar na conta" → abre AuthDialog
-  - Quando logado: mostra "Minha Conta"
+  - Quando logado: mostra "Minha Conta" + botão "Sair"
+  - Botão "Sair" → executa logout e fecha drawer
 
 ### Testes Implementados
 
@@ -58,6 +60,8 @@
 - Preenchimento de formulário
 - Login bem-sucedido
 - Verificação de mudança de estado (botão "Entrar" desaparece)
+- **Logout via AppBar** (desktop)
+- **Logout via mobile drawer**
 
 ### Configuração de Testes
 
