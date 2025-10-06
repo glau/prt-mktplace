@@ -147,3 +147,27 @@ src/
 - `/categoria/[slug]` - Listagem de produtos por categoria
 - `/produto/[id]` - Detalhes do produto
 - `/categorias` - Lista de todas as categorias
+
+## 🔐 Autenticação (Protótipo MSW)
+
+Sistema completo de login/cadastro usando Mock Service Worker para prototipagem.
+
+### Usuário de Teste
+```
+Email: teste@teste.com
+Senha: 1234
+```
+
+### Funcionalidades
+- ✅ Login com validação de credenciais
+- ✅ Cadastro de novos usuários
+- ✅ Persistência de sessão (sessionStorage)
+- ✅ Validação automática de token
+- ✅ UI integrada (AppBar + Mobile Drawer)
+
+### Como Usar
+1. Clique em "Entrar" no AppBar
+2. Use as credenciais de teste ou cadastre novo usuário
+3. Após login, interface muda para "Minha Conta"
+
+**Documentação completa**: [docs/auth-feature-summary.md](docs/auth-feature-summary.md)
