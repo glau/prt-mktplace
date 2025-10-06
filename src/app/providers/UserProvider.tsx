@@ -22,7 +22,7 @@ const UserContext = React.createContext<UserContextValue | undefined>(undefined)
 
 const TOKEN_KEY = 'auth:token';
 
-async function apiPost<T>(path: string, body: any): Promise<T> {
+async function apiPost<T>(path: string, body: unknown): Promise<T> {
   const res = await fetch(path, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },

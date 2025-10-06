@@ -26,13 +26,11 @@ import { useUser } from '@/app/providers/UserProvider';
 export interface MarketplaceAppBarProps {
   showAuthButtons?: boolean;
   onMenuClick?: () => void;
-  onAuthClick?: () => void;
 }
 
 export default function MarketplaceAppBar({
   showAuthButtons = true,
   onMenuClick,
-  onAuthClick,
 }: MarketplaceAppBarProps) {
   const { mode, toggleColorMode } = useColorMode();
   const { user, logout } = useUser();
@@ -137,7 +135,8 @@ export default function MarketplaceAppBar({
                     variant="outlined"
                     color="primary"
                     startIcon={<PersonOutline />}
-                    onClick={onAuthClick}
+                    component={Link}
+                    href="/login"
                     sx={{
                       borderRadius: 999,
                       px: 3,
@@ -147,19 +146,15 @@ export default function MarketplaceAppBar({
                   >
                     Entrar
                   </Button>
-                  <Avatar
-                    onClick={onAuthClick}
+                  <IconButton
+                    component={Link}
+                    href="/login"
                     sx={{
-                      width: 40,
-                      height: 40,
-                      bgcolor: 'transparent',
-                      color: 'inherit',
                       display: { xs: 'inline-flex', sm: 'none' },
-                      cursor: 'pointer',
                     }}
                   >
-                    <PersonOutline fontSize="small" />
-                  </Avatar>
+                    <PersonOutline />
+                  </IconButton>
                 </>
               )}
             </>

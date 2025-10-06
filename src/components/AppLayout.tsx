@@ -25,7 +25,6 @@ import {
 } from '@mui/icons-material';
 import MarketplaceAppBar from './MarketplaceAppBar';
 import { coreNavItems } from '@/utils/navigation';
-import AuthDialog from './AuthDialog';
 import { useUser } from '@/app/providers/UserProvider';
 
 export interface AppLayoutProps {
@@ -40,7 +39,6 @@ export default function AppLayout({
   onMenuClick,
 }: AppLayoutProps) {
   const [mobileNavOpen, setMobileNavOpen] = React.useState(false);
-  const [authOpen, setAuthOpen] = React.useState(false);
   const { user, logout } = useUser();
 
   const handleOpenMobileNav = React.useCallback(() => {
@@ -83,7 +81,6 @@ export default function AppLayout({
       {showAppBar ? (
         <MarketplaceAppBar
           onMenuClick={handleOpenMobileNav}
-          onAuthClick={() => setAuthOpen(true)}
         />
       ) : null}
       <Box component="main" sx={{ flexGrow: 1, display: 'flex', flexDirection: 'column' }}>
@@ -154,7 +151,9 @@ export default function AppLayout({
                 variant="outlined"
                 color="primary"
                 startIcon={<PersonOutline />}
-                onClick={() => { setAuthOpen(true); handleCloseMobileNav(); }}
+                component={Link}
+                href="/login"
+                onClick={handleCloseMobileNav}
                 sx={{ borderRadius: 999, textTransform: 'none', fontWeight: 600 }}
               >
                 Entrar na conta
@@ -163,9 +162,6 @@ export default function AppLayout({
           </Stack>
         </Box>
       </Drawer>
-      <AuthDialog open={authOpen} onClose={() => setAuthOpen(false)} />
     </Box>
   );
 }
-
-

@@ -167,9 +167,10 @@ Senha: 1234
 - ✅ UI integrada (AppBar + Mobile Drawer)
 
 ### Como Usar
-1. Clique em "Entrar" no AppBar
-2. Use as credenciais de teste ou cadastre novo usuário
-3. Após login, interface muda para "Minha Conta"
-4. Para logout: clique em "Sair" (AppBar desktop ou menu mobile)
+1. Clique em "Entrar" no AppBar ou no menu mobile
+2. Será redirecionado para a página dedicada de autenticação em `/login`
+3. Use as credenciais de teste ou cadastre novo usuário
+4. Após login, interface muda para "Minha Conta"
+5. Para logout: clique em "Sair" (AppBar desktop ou menu mobile)
 
 **Documentação completa**: [docs/auth-feature-summary.md](docs/auth-feature-summary.md)
