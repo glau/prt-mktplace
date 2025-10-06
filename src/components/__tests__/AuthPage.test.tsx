@@ -170,9 +170,21 @@ describe('AuthPage', () => {
     const user = userEvent.setup();
     renderWithProviders(<AuthPage mode="login" />);
 
-    const backButton = screen.getByRole('button', { name: /voltar/i });
+    const backButton = screen.getByLabelText(/voltar/i);
     await user.click(backButton);
 
     expect(mockBack).toHaveBeenCalled();
+  });
+
+  it('calls router.replace when toggling mode', async () => {
+    const user = userEvent.setup();
+    renderWithProviders(<AuthPage mode="login" />);
+
+    const toggleContainer = screen.getByText(/não tem uma conta\?/i);
+    const toggleLink = toggleContainer.querySelector('a');
+
+    await user.click(toggleLink!);
+
+    expect(mockReplace).toHaveBeenCalledWith('/register');
   });
 });
