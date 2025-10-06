@@ -2,7 +2,7 @@ import { describe, it, expect, beforeEach } from '@/test';
 
 const BASE = '';
 
-async function post(path: string, body: any, token?: string) {
+async function post(path: string, body: Record<string, unknown>, token?: string) {
   const res = await fetch(`${BASE}${path}`, {
     method: 'POST',
     headers: {

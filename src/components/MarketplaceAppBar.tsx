@@ -7,7 +7,6 @@ import {
   Box,
   IconButton,
   Button,
-  Avatar,
   Divider,
 } from '@mui/material';
 import {
