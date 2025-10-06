@@ -35,7 +35,7 @@ export default function MarketplaceAppBar({
   onAuthClick,
 }: MarketplaceAppBarProps) {
   const { mode, toggleColorMode } = useColorMode();
-  const { user } = useUser();
+  const { user, logout } = useUser();
   return (
     <AppBar
       position="sticky"
@@ -114,13 +114,23 @@ export default function MarketplaceAppBar({
             <>
               <Divider orientation="vertical" flexItem sx={{ display: { xs: 'none', md: 'block' }, height: 28 }} />
               {user ? (
-                <Button
-                  variant="outlined"
-                  color="primary"
-                  sx={{ borderRadius: 999, px: 3, textTransform: 'none', display: { xs: 'none', sm: 'inline-flex' } }}
-                >
-                  Minha Conta
-                </Button>
+                <>
+                  <Button
+                    variant="outlined"
+                    color="primary"
+                    sx={{ borderRadius: 999, px: 3, textTransform: 'none', display: { xs: 'none', sm: 'inline-flex' } }}
+                  >
+                    Minha Conta
+                  </Button>
+                  <Button
+                    variant="text"
+                    color="error"
+                    onClick={logout}
+                    sx={{ borderRadius: 999, px: 2, textTransform: 'none', display: { xs: 'none', sm: 'inline-flex' } }}
+                  >
+                    Sair
+                  </Button>
+                </>
               ) : (
                 <>
                   <Button

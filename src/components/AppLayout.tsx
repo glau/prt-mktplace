@@ -41,7 +41,7 @@ export default function AppLayout({
 }: AppLayoutProps) {
   const [mobileNavOpen, setMobileNavOpen] = React.useState(false);
   const [authOpen, setAuthOpen] = React.useState(false);
-  const { user } = useUser();
+  const { user, logout } = useUser();
 
   const handleOpenMobileNav = React.useCallback(() => {
     setMobileNavOpen(true);
@@ -128,14 +128,27 @@ export default function AppLayout({
           <Divider />
           <Stack spacing={1.5} sx={{ px: 2, py: 2.5 }}>
             {user ? (
-              <Button
-                variant="outlined"
-                color="primary"
-                sx={{ borderRadius: 999, textTransform: 'none', fontWeight: 600 }}
-                onClick={handleCloseMobileNav}
-              >
-                Minha Conta
-              </Button>
+              <>
+                <Button
+                  variant="outlined"
+                  color="primary"
+                  sx={{ borderRadius: 999, textTransform: 'none', fontWeight: 600 }}
+                  onClick={handleCloseMobileNav}
+                >
+                  Minha Conta
+                </Button>
+                <Button
+                  variant="text"
+                  color="error"
+                  onClick={() => {
+                    logout();
+                    handleCloseMobileNav();
+                  }}
+                  sx={{ borderRadius: 999, textTransform: 'none', fontWeight: 600 }}
+                >
+                  Sair
+                </Button>
+              </>
             ) : (
               <Button
                 variant="outlined"
