@@ -4,29 +4,22 @@ import React from 'react';
 import {
   Container,
   Typography,
-  Card,
-  CardContent,
-  CardActionArea,
   Box,
-  Chip,
   Paper,
   CircularProgress,
 } from '@mui/material';
-import {
-  Category as CategoryIcon,
-  TrendingUp,
-} from '@mui/icons-material';
-import Link from 'next/link';
-import ProductCard from '../components/ProductCard';
-import type { Category, Product } from '../data/products';
-import { fetchCategories, fetchProducts } from '../lib/api';
+import type { Product } from '../data/products';
+import { fetchProducts } from '../lib/api';
 import AppLayout from '../components/AppLayout';
-import HeroSection from '../components/HeroSection';
-import { cardHoverStyle, responsiveGrid } from '../styles/commonStyles';
+import HeroBanner from '../components/HeroBanner';
+import ServiceCards from '../components/ServiceCards';
+import SearchSection from '../components/SearchSection';
+import CategoriesSection from '../components/CategoriesSection';
+import ProductSection from '../components/ProductSection';
+import HomeFooter from '../components/HomeFooter';
 
 export default function Home() {
-  const [categories, setCategories] = React.useState<Category[]>([]);
-  const [featuredProducts, setFeaturedProducts] = React.useState<Product[]>([]);
+  const [products, setProducts] = React.useState<Product[]>([]);
   const [loading, setLoading] = React.useState(true);
   const [error, setError] = React.useState<string | null>(null);
 
@@ -38,15 +31,11 @@ export default function Home() {
       setError(null);
 
       try {
-        const [categoriesData, productsData] = await Promise.all([
-          fetchCategories(),
-          fetchProducts(),
-        ]);
+        const productsData = await fetchProducts();
 
         if (!active) return;
 
-        setCategories(categoriesData);
-        setFeaturedProducts(productsData.slice(0, 8));
+        setProducts(productsData);
       } catch (err) {
         console.error(err);
         if (active) {
@@ -66,11 +55,18 @@ export default function Home() {
     };
   }, []);
 
+  // Split products into different sections
+  const nearbyProducts = products.slice(0, 5);
+  const categoryHighlights = products.slice(5, 10);
+  const openDemands = products.slice(10, 15);
+
   if (loading) {
     return (
-      <Container maxWidth="lg" sx={{ py: 6, display: 'flex', justifyContent: 'center' }}>
-        <CircularProgress />
-      </Container>
+      <AppLayout>
+        <Container maxWidth="lg" sx={{ py: 6, display: 'flex', justifyContent: 'center' }}>
+          <CircularProgress />
+        </Container>
+      </AppLayout>
     );
   }
 
@@ -91,103 +87,36 @@ export default function Home() {
 
   return (
     <AppLayout>
-      <HeroSection />
+      {/* Hero Banner */}
+      <HeroBanner />
 
-      <Container
-        maxWidth="lg"
-        sx={{
-          py: 4,
-          display: 'flex',
-          flexDirection: 'column',
-          gap: 6,
-        }}
-      >
+      {/* Service Cards */}
+      <ServiceCards />
 
-        {/* Categories Section */}
-        <Box sx={{ mb: 6 }}>
-          <Box sx={{ display: 'flex', alignItems: 'center', mb: 3 }}>
-            <CategoryIcon sx={{ mr: 1, color: 'primary.main' }} />
-            <Typography variant="h4" component="h2" sx={{ fontWeight: 600 }}>
-              Categorias
-            </Typography>
-          </Box>
+      {/* Search Section */}
+      <SearchSection />
 
-          <Box
-            sx={{
-              display: 'grid',
-              gridTemplateColumns: responsiveGrid.categories,
-              gap: 3,
-            }}
-          >
-            {categories.map((category) => (
-              <Link href={`/categoria/${category.id}`} key={category.id} style={{ textDecoration: 'none' }}>
-                <Card
-                  sx={{
-                    height: '100%',
-                    ...cardHoverStyle,
-                  }}
-                >
-                  <CardActionArea sx={{ p: 2, textAlign: 'center' }}>
-                    <CardContent sx={{ p: 0 }}>
-                      <Typography variant="h6" component="h3" sx={{ mb: 1, fontWeight: 600 }}>
-                        {category.name}
-                      </Typography>
-                      <Chip
-                        label={`${category.count} anúncios`}
-                        size="small"
-                        color="primary"
-                        variant="outlined"
-                      />
-                    </CardContent>
-                  </CardActionArea>
-                </Card>
-              </Link>
-            ))}
-          </Box>
-        </Box>
+      {/* Categories Section */}
+      <CategoriesSection />
 
-        {/* Featured Products Section */}
-        <Box>
-          <Box sx={{ display: 'flex', alignItems: 'center', mb: 3 }}>
-            <TrendingUp sx={{ mr: 1, color: 'primary.main' }} />
-            <Typography variant="h4" component="h2" sx={{ fontWeight: 600 }}>
-              Produtos em Destaque
-            </Typography>
-          </Box>
+      {/* Product Sections */}
+      <ProductSection
+        title="Oportunidades Perto de Você"
+        products={nearbyProducts}
+      />
 
-          <Box
-            sx={{
-              display: 'grid',
-              gridTemplateColumns: responsiveGrid.products,
-              gap: 3,
-            }}
-          >
-            {featuredProducts.map((product) => (
-              <ProductCard key={product.id} product={product} />
-            ))}
-          </Box>
-        </Box>
+      <ProductSection
+        title="Destaques da Categoria"
+        products={categoryHighlights}
+      />
 
-        {/* Footer Info */}
-        <Paper 
-          elevation={1}
-          sx={{
-            p: 4,
-            mt: 6,
-            textAlign: 'center',
-            bgcolor: 'background.paper',
-            borderColor: 'divider'
-          }}
-        >
-          <Typography variant="h6" sx={{ mb: 2 }}>
-            Protótipo para Validação Interna
-          </Typography>
-          <Typography variant="body2" color="text.secondary">
-            Este é um protótipo do redesign do marketplace B2Blue usando Material UI 7.
-            Desenvolvido para alinhamento interno e validação de conceitos de UX/UI.
-          </Typography>
-        </Paper>
-      </Container>
+      <ProductSection
+        title="Demandas Abertas"
+        products={openDemands}
+      />
+
+      {/* Footer */}
+      <HomeFooter />
     </AppLayout>
   );
 }
