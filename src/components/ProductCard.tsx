@@ -136,7 +136,7 @@ export default function ProductCard({ product }: ProductCardProps) {
                 color: 'text.secondary',
               }}
             >
-              /{product.unit || 'kg'}
+              /{product.adDetails?.quantity?.unit || 'kg'}
             </Typography>
           </Typography>
 

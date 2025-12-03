@@ -4,7 +4,6 @@ import React from 'react';
 import {
   Container,
   Typography,
-  Box,
   Paper,
   CircularProgress,
 } from '@mui/material';
